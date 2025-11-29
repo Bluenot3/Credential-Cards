@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer Credential Card - Platinum</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --card-width: 400px;
+            --card-height: 600px;
+            --primary-glow: #4e73df;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --border-light: rgba(255, 255, 255, 0.4);
+            --border-shadow: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #050508;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #1a1a40 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #2a0a2e 0%, transparent 40%);
+            font-family: 'Inter', sans-serif;
+            perspective: 1500px;
+            overflow: hidden;
+        }
+
+        /* Moving background elements for refraction context */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: orb-float 20s infinite ease-in-out;
+        }
+        .orb-1 { width: 400px; height: 400px; background: #2563eb; top: -100px; left: -100px; animation-duration: 25s; }
+        .orb-2 { width: 300px; height: 300px; background: #d946ef; bottom: -50px; right: -50px; animation-duration: 18s; animation-direction: reverse; }
+        .orb-3 { width: 200px; height: 200px; background: #06b6d4; top: 40%; left: 40%; animation-duration: 30s; }
+
+        @keyframes orb-float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .card-container {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 32px;
+            background: var(--glass-surface);
+            /* Advanced Glass Styling */
+            backdrop-filter: blur(24px) saturate(160%) brightness(1.1);
+            -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.1);
+            
+            /* Multi-layer border for thickness */
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 40px rgba(255, 255, 255, 0.05),
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                0 0 80px rgba(78, 115, 223, 0.1); /* Ambient glow */
+                
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            
+            transition: transform 0.1s cubic-bezier(0.2, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+
+        /* Noise Texture for Realism */
+        .noise-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Chromatic Aberration Edge */
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 32px;
+            padding: 1px;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 45%, rgba(100,200,255,0.6) 50%, rgba(255,255,255,0.4) 55%, transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* The "Sheen" that follows the mouse */
+        .specular-highlight {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(
+                800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(255, 255, 255, 0.15),
+                transparent 40%
+            );
+            z-index: 4;
+            pointer-events: none;
+            mix-blend-mode: color-dodge;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 5;
+            padding: 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            color: #fff;
+            transform: translateZ(20px);
+        }
+
+        /* --- Header Section --- */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .brand-mark {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            background: linear-gradient(to bottom right, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .tier-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* --- Chip & Holo --- */
+        .tech-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .chip {
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 50%, #b8860b 100%);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3), 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .chip::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0; height: 1px; background: rgba(0,0,0,0.3);
+        }
+        .chip::after {
+            content: '';
+            position: absolute;
+            left: 30%; top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,0.3);
+            box-shadow: 20px 0 0 rgba(0,0,0,0.3);
+        }
+
+        .holo-strip {
+            width: 120px;
+            height: 30px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            position: relative;
+            overflow: hidden;
+            opacity: 0.7;
+        }
+        .holo-strip::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 200%; height: 100%;
+            background: linear-gradient(115deg, transparent 30%, rgba(0, 255, 255, 0.6) 45%, rgba(255, 0, 255, 0.6) 55%, transparent 70%);
+            mix-blend-mode: overlay;
+            animation: holo-pan 4s infinite linear;
+        }
+        @keyframes holo-pan {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50%); }
+        }
+
+        /* --- Identity --- */
+        .identity-section {
+            text-align: center;
+            margin-bottom: 20px;
+            transform: translateZ(30px);
+        }
+
+        .avatar-frame {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Procedural Avatar Graphic */
+        .avatar-inner::before {
+            content: '';
+            position: absolute;
+            width: 150%; height: 150%;
+            background: conic-gradient(from 0deg, #4e73df, #00d2ff, #4e73df);
+            animation: spin 10s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .user-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- Stats/Skills --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+            transform: translateZ(10px);
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+        }
+
+        .stat-bar-bg {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4e73df, #00d2ff);
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+            width: 0%; /* Animated via JS */
+            transition: width 1s ease-out;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+
+        .meta-data {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.4);
+            font-family: monospace;
+        }
+
+        .qr-placeholder {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 4px;
+            padding: 2px;
+            opacity: 0.8;
+        }
+
+        /* Interactive Unlock Animation Classes */
+        .unlocked-pulse {
+            animation: pulse-glow 1s ease-out;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        .skill-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="card-container">
+        <div class="card">
+            <!-- Layers for visual effects -->
+            <div class="noise-overlay"></div>
+            <div class="specular-highlight"></div>
+            
+            <div class="content-layer">
+                <!-- Top Section -->
+                <div>
+                    <div class="top-row">
+                        <div class="brand-mark">ZEN.AI</div>
+                        <div class="tier-badge">Platinum Pioneer</div>
+                    </div>
+
+                    <div class="tech-row">
+                        <div class="chip"></div>
+                        <div class="holo-strip"></div>
+                    </div>
+
+                    <div class="identity-section">
+                        <div class="avatar-frame">
+                            <div class="avatar-inner">AC</div>
+                        </div>
+                        <h2 class="user-name">Alex Chen</h2>
+                        <div class="user-role">Certified AI Architect</div>
+                    </div>
+                </div>
+
+                <!-- Middle Section: Skills -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">LLM Fine-Tuning</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 92%"></div></div>
+                        <span class="skill-value">92%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">RAG Systems</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 88%"></div></div>
+                        <span class="skill-value">88%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Ethics & Safety</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 95%"></div></div>
+                        <span class="skill-value">95%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Agentic Flows</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 84%"></div></div>
+                        <span class="skill-value">84%</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Section -->
+                <div class="footer">
+                    <div class="meta-data">
+                        <span>ID: 8821-XP-99</span>
+                        <span>ISSUED: 2024.11.24</span>
+                        <span>VALID: LIFETIME</span>
+                    </div>
+                    <!-- Simple CSS-only QR representation -->
+                    <div class="qr-placeholder" style="background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000); background-size: 10px 10px; background-position: 0 0, 5px 5px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cardContainer = document.querySelector('.card-container');
+        const card = document.querySelector('.card');
+        const cardRect = cardContainer.getBoundingClientRect();
+        
+        // Tilt Effect
+        cardContainer.addEventListener('mousemove', (e) => {
+            const x = e.clientX - cardRect.left;
+            const y = e.clientY - cardRect.top;
+            
+            const centerX = cardRect.width / 2;
+            const centerY = cardRect.height / 2;
+            
+            // Calculate rotation (clamped)
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            // Update CSS variables for lighting
+            card.style.setProperty('--mouse-x', `${(x / cardRect.width) * 100}%`);
+            card.style.setProperty('--mouse-y', `${(y / cardRect.height) * 100}%`);
+            
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        cardContainer.addEventListener('mouseleave', () => {
+            card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        });
+
+        // Animation for skill bars on load
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.stat-bar-fill');
+            bars.forEach(bar => {
+                const target = bar.getAttribute('style').match(/--target-width:\s*(\d+%)/)[1];
+                setTimeout(() => {
+                    bar.style.width = target;
+                }, 300); // Slight delay for effect
+            });
+        });
+
+        // Subtle parallax for the orb background
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            document.querySelector('.orb-1').style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+            document.querySelector('.orb-2').style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
+        });
+    </script>
+</body>
+</html>
