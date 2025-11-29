@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer Credential Card - Obsidian Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --card-width: 420px;
+            --card-height: 640px;
+            --primary-accent: #6366f1;
+            --secondary-accent: #06b6d4;
+            --glass-surface: rgba(15, 15, 20, 0.6);
+            --border-highlight: rgba(255, 255, 255, 0.6);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #030305;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
+            font-family: 'Inter', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- Ambient Environment --- */
+        .ambient-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            animation: breathe 8s infinite ease-in-out alternate;
+        }
+        .glow-1 { top: -20%; left: -10%; width: 600px; height: 600px; background: #4338ca; animation-delay: 0s; }
+        .glow-2 { bottom: -20%; right: -10%; width: 500px; height: 500px; background: #0891b2; animation-delay: -4s; }
+
+        @keyframes breathe {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* --- Main Card Container --- */
+        .card-container {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 36px;
+            background: var(--glass-surface);
+            
+            /* High-Fidelity Glass Shader */
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            
+            /* Complex shadowing for physical presence */
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+                0 50px 100px -20px rgba(0, 0, 0, 0.7),
+                inset 0 0 80px rgba(0, 0, 0, 0.5);
+                
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+            transition: transform 0.1s cubic-bezier(0.2, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+
+        /* --- Internal Textures --- */
+        
+        /* 1. Technical Grid Mesh */
+        .grid-mesh {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 2. Film Grain */
+        .grain-overlay {
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 3. Prismatic Sheen (Rainbow edge reflection) */
+        .prism-sheen {
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.0) 50%);
+            z-index: 10;
+            pointer-events: none;
+            mix-blend-mode: color-dodge;
+        }
+
+        /* --- Content Layout --- */
+        .content-layer {
+            position: relative;
+            z-index: 20;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+            box-sizing: border-box;
+            color: var(--text-main);
+            transform-style: preserve-3d;
+        }
+
+        /* Header Area */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateZ(40px);
+            margin-bottom: 30px;
+        }
+
+        .logo-mark {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .clearance-badge {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.6rem;
+            color: #6edff6;
+            border: 1px solid rgba(110, 223, 246, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(110, 223, 246, 0.05);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Holographic Elements */
+        .holo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            transform: translateZ(30px);
+        }
+
+        .smart-chip {
+            width: 54px;
+            height: 42px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #e2e2e2 0%, #a0a0a0 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 0 1px rgba(0,0,0,0.2),
+                0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        /* Chip circuitry lines */
+        .smart-chip::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                linear-gradient(90deg, transparent 49%, rgba(0,0,0,0.1) 50%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, rgba(0,0,0,0.1) 50%, transparent 51%);
+            background-size: 14px 14px;
+            border-radius: 6px;
+        }
+        .smart-chip::after {
+            content: '';
+            position: absolute;
+            top: 25%; left: 25%; width: 50%; height: 50%;
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .holo-emblem {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, #06b6d4, transparent);
+            animation: spin-slow 4s linear infinite;
+            filter: blur(4px);
+            opacity: 0.8;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+        /* User Identity */
+        .user-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transform: translateZ(60px); /* Significant depth */
+            margin-bottom: 30px;
+        }
+
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            padding: 4px; /* Space for ring */
+            position: relative;
+            background: conic-gradient(from 180deg, #6366f1, transparent 50%, #06b6d4, transparent 90%);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+            margin-bottom: 20px;
+            animation: ring-rotate 10s linear infinite;
+        }
+
+        @keyframes ring-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            background: #111;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Counter-rotate to keep image upright */
+            animation: ring-rotate-reverse 10s linear infinite;
+        }
+        
+        @keyframes ring-rotate-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+        .avatar-placeholder {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            background: linear-gradient(135deg, #1e1b4b, #0f172a);
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .user-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to bottom, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Biometric & Stats Row */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            gap: 15px;
+            margin-bottom: auto;
+            transform: translateZ(20px);
+            width: 100%;
+            align-items: center;
+        }
+
+        .stats-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .stat-val {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .vertical-divider {
+            height: 60%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .biometric-scanner {
+            width: 100%;
+            height: 60px;
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .biometric-scanner:hover {
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        .fingerprint-icon {
+            width: 32px; height: 32px;
+            fill: none;
+            stroke: rgba(255,255,255,0.3);
+            stroke-width: 1.5;
+            transition: stroke 0.3s;
+        }
+        
+        .biometric-scanner:hover .fingerprint-icon {
+            stroke: #6366f1;
+        }
+
+        .scan-beam {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: #6366f1;
+            box-shadow: 0 0 10px #6366f1;
+            transform: translateY(-100%);
+            animation: scan-move 2s infinite linear;
+            opacity: 0;
+        }
+        
+        .biometric-scanner:hover .scan-beam {
+            opacity: 1;
+        }
+
+        @keyframes scan-move {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(60px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* --- Footer Ticker --- */
+        .footer-section {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+            transform: translateZ(15px);
+        }
+
+        .ticker-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            font-family: 'Rajdhani', monospace;
+            font-size: 0.7rem;
+            color: #6edff6;
+            background: rgba(6, 182, 212, 0.05);
+            padding: 8px 0;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            animation: ticker-scroll 15s linear infinite;
+        }
+
+        @keyframes ticker-scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Verification Badge */
+        .verified-badge {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px #10b981;
+            transform: translateZ(50px);
+        }
+        .verified-check {
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="card-container">
+        <div class="card">
+            <!-- Environmental Layers -->
+            <div class="grid-mesh"></div>
+            <div class="grain-overlay"></div>
+            <div class="prism-sheen"></div>
+
+            <div class="content-layer">
+                
+                <!-- Header -->
+                <div class="header-row">
+                    <div class="logo-mark">ZEN.OS</div>
+                    <div class="clearance-badge">LVL 5 CLEARANCE</div>
+                </div>
+
+                <!-- Holo & Chip -->
+                <div class="holo-row">
+                    <div class="smart-chip"></div>
+                    <div class="holo-emblem"></div>
+                </div>
+
+                <!-- Identity -->
+                <div class="user-section">
+                    <div class="avatar-container">
+                        <div class="avatar-img">
+                            <div class="avatar-placeholder">AC</div>
+                        </div>
+                    </div>
+                    <h1 class="user-name">Alex Chen</h1>
+                    <div class="user-title">Chief AI Architect • Neural Division</div>
+                </div>
+
+                <!-- Live Data & Biometrics -->
+                <div class="data-grid">
+                    <div class="stats-col">
+                        <div class="stat-item">
+                            <span>IQ.Score</span>
+                            <span class="stat-val">142</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Net.Link</span>
+                            <span class="stat-val">Active</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Credits</span>
+                            <span class="stat-val">8,940</span>
+                        </div>
+                    </div>
+
+                    <div class="vertical-divider"></div>
+
+                    <!-- Interactive Scanner -->
+                    <div class="biometric-scanner">
+                        <div class="scan-beam"></div>
+                        <svg class="fingerprint-icon" viewBox="0 0 24 24">
+                            <path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 6c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z"/>
+                            <path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z" style="opacity:0.5"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Footer Ticker -->
+                <div class="footer-section">
+                    <div class="ticker-container">
+                        <div class="ticker-text">
+                            LATEST: RAG OPTIMIZATION COMPLETE [100%] /// DEPLOYMENT SUCCESSFUL /// NEW BADGE UNLOCKED: "AGI PIONEER" /// SYSTEM STATUS: NOMINAL
+                        </div>
+                    </div>
+                </div>
+
+                <div class="verified-badge">
+                    <div class="verified-check">✓</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cardContainer = document.querySelector('.card-container');
+        const card = document.querySelector('.card');
+        const rect = cardContainer.getBoundingClientRect();
+        const body = document.body;
+
+        function handleMouseMove(e) {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Calculate center relative to viewport
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            // Calculate offset
+            const offsetX = x - centerX;
+            const offsetY = y - centerY;
+            
+            // Rotation values (Adjust sensitivity)
+            const rotateX = (offsetY / centerY) * -15; // Max -15 to 15 deg
+            const rotateY = (offsetX / centerX) * 15;
+            
+            // Dynamic Light Source position
+            const lightX = 50 + (offsetX / centerX) * 40; // 10% to 90%
+            const lightY = 50 + (offsetY / centerY) * 40;
+
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            
+            // Move ambient lights inversely for parallax background feel
+            const glow1 = document.querySelector('.glow-1');
+            const glow2 = document.querySelector('.glow-2');
+            
+            glow1.style.transform = `translate(${offsetX * 0.05}px, ${offsetY * 0.05}px)`;
+            glow2.style.transform = `translate(${offsetX * -0.05}px, ${offsetY * -0.05}px)`;
+        }
+
+        function resetCard() {
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        }
+
+        // Add event listener to BODY for smoother full-screen tracking
+        body.addEventListener('mousemove', handleMouseMove);
+        body.addEventListener('mouseleave', resetCard);
+
+        // Biometric Scan Interaction
+        const scanner = document.querySelector('.biometric-scanner');
+        const icon = document.querySelector('.fingerprint-icon');
+        
+        scanner.addEventListener('mouseenter', () => {
+            // Simulate Haptic/Visual feedback
+            icon.style.stroke = "#6366f1";
+            icon.style.filter = "drop-shadow(0 0 5px #6366f1)";
+        });
+        
+        scanner.addEventListener('mouseleave', () => {
+            icon.style.stroke = "rgba(255,255,255,0.3)";
+            icon.style.filter = "none";
+        });
+
+    </script>
+</body>
+</html>
