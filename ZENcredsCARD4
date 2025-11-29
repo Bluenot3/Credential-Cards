@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - AGI Horizon</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --card-w: 460px;
+            --card-h: 740px;
+            --bg-dark: #030305;
+            --glass-tint: rgba(20, 20, 25, 0.6);
+            --neon-purple: #a855f7;
+            --neon-cyan: #06b6d4;
+            --neon-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-dim: rgba(248, 250, 252, 0.5);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.15), transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.15), transparent 40%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            font-family: 'Space Grotesk', sans-serif;
+            perspective: 2000px; /* Deep perspective */
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene Container --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- The Glass Chassis (Back Layer) --- */
+        .glass-chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 48px;
+            background: var(--glass-tint);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.05),
+                0 50px 100px -20px rgba(0,0,0,0.9),
+                inset 0 0 80px rgba(0,0,0,0.7);
+            transform: translateZ(0px); /* Base layer */
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Rainbow Holo Rim */
+        .glass-chassis::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50px;
+            padding: 2px;
+            background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.4) 45%, var(--neon-cyan) 50%, var(--neon-purple) 55%, transparent 70%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* --- Internal Layers (Parallax) --- */
+        
+        /* Layer 1: Background Grid & Texture (Deepest) */
+        .layer-deep {
+            position: absolute;
+            inset: 20px;
+            transform: translateZ(20px);
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .hex-grid {
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, var(--neon-purple) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: radial-gradient(circle at 50% 50%, black, transparent 80%);
+        }
+
+        /* Layer 2: Main Content (Mid) */
+        .layer-mid {
+            position: absolute;
+            inset: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            transform: translateZ(50px); /* Pops out */
+            z-index: 3;
+            transform-style: preserve-3d;
+        }
+
+        /* Layer 3: Floating Highlights (Highest) */
+        .layer-float {
+            position: absolute;
+            inset: 0;
+            transform: translateZ(80px);
+            z-index: 4;
+            pointer-events: none;
+        }
+        
+        /* Interactive Reflection */
+        .reflection-sheen {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.15), transparent 50%);
+            mix-blend-mode: screen;
+            border-radius: 48px;
+        }
+
+        /* --- Component Styling --- */
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .brand-logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 2.2rem;
+            color: white;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+            letter-spacing: 2px;
+        }
+        .status-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--neon-cyan);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        /* Identity Block */
+        .identity-block {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        /* Rotating rings around avatar */
+        .orbit-ring {
+            position: absolute;
+            inset: -10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--neon-cyan);
+            animation: spin 10s linear infinite;
+        }
+        .orbit-ring:nth-child(2) {
+            inset: -5px;
+            border-color: transparent;
+            border-left-color: var(--neon-purple);
+            animation: spin 7s linear infinite reverse;
+        }
+
+        .avatar-core {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #1e1b4b, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+        
+        .user-info h1 {
+            font-size: 2rem;
+            margin: 0;
+            font-weight: 700;
+            color: white;
+            line-height: 1;
+        }
+        .user-info p {
+            margin: 6px 0 0;
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* The Quantum Core (Replacing Chip) */
+        .core-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .quantum-core {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: black;
+            position: relative;
+            box-shadow: inset 0 0 20px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .core-light {
+            width: 20px;
+            height: 20px;
+            background: var(--neon-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--neon-gold), 0 0 30px var(--neon-gold);
+            animation: pulse-core 2s infinite ease-in-out;
+        }
+        
+        .core-ring {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px dashed rgba(251, 191, 36, 0.3);
+            animation: spin 20s linear infinite;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            flex: 1;
+            height: 60px;
+            margin-left: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--neon-purple);
+            overflow: hidden;
+            position: relative;
+        }
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(255,255,255,0.1);
+            animation: scan 3s linear infinite;
+        }
+        #code-stream {
+            opacity: 0.8;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        /* Badges 3D */
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+            transform-style: preserve-3d;
+        }
+        
+        .badge-3d {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .badge-3d:hover {
+            transform: translateZ(20px) scale(1.1);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .badge-3d svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: auto;
+        }
+        
+        .metric-box {
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px 10px;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .metric-box:hover { border-bottom-color: var(--neon-purple); background: rgba(255,255,255,0.06); }
+        
+        .metric-val {
+            display: block;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+        .metric-label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .footer-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Animations */
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse-core { 
+            0%, 100% { transform: scale(0.95); opacity: 0.8; } 
+            50% { transform: scale(1.1); opacity: 1; } 
+        }
+        @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Layer 1: Base Chassis (Glass) -->
+            <div class="glass-chassis">
+                <div class="layer-deep">
+                    <div class="hex-grid"></div>
+                </div>
+            </div>
+
+            <!-- Layer 3: Floating Highlights -->
+            <div class="layer-float">
+                <div class="reflection-sheen"></div>
+            </div>
+
+            <!-- Layer 2: Main Content (Pops out) -->
+            <div class="layer-mid">
+                
+                <div class="header">
+                    <div class="brand-logo">ZEN.AI</div>
+                    <div class="status-pill">● Online</div>
+                </div>
+
+                <div class="identity-block">
+                    <div class="avatar-container">
+                        <div class="orbit-ring"></div>
+                        <div class="orbit-ring"></div>
+                        <div class="avatar-core">
+                            <span style="font-size: 2rem; font-weight: 700; color:white;">AC</span>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <h1>Alex Chen</h1>
+                        <p>AGI Architect • Class 01</p>
+                    </div>
+                </div>
+
+                <!-- Quantum Core & Terminal -->
+                <div class="core-section">
+                    <div class="quantum-core">
+                        <div class="core-ring"></div>
+                        <div class="core-light"></div>
+                    </div>
+                    <div class="terminal-window">
+                        <div class="scanline"></div>
+                        <div id="code-stream"></div>
+                    </div>
+                </div>
+
+                <!-- 3D Badges -->
+                <div class="badges-container">
+                    <div class="badge-3d" title="Neural Networks">
+                        <svg viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+                    </div>
+                    <div class="badge-3d" title="Data Ethics">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                    <div class="badge-3d" title="Cognitive Science">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                    </div>
+                    <div class="badge-3d" title="Quantum Encryption">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                    </div>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="metrics-row">
+                    <div class="metric-box">
+                        <span class="metric-val">99.9%</span>
+                        <span class="metric-label">Uptime</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val">15ms</span>
+                        <span class="metric-label">Latency</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-val">Lvl. 10</span>
+                        <span class="metric-label">Clearance</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="footer-text">
+                        ID: 000-ZEN-AGI<br>
+                        ISSUED: 2025.11.29
+                    </div>
+                    <div style="text-align: right;" class="footer-text">
+                        Zenith Certification Board<br>
+                        Auth: SHA-256 Validated
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const card = document.getElementById('card');
+        const cardLayerMid = document.querySelector('.layer-mid');
+        const cardLayerDeep = document.querySelector('.layer-deep');
+        const scene = document.querySelector('.scene');
+        const reflection = document.querySelector('.reflection-sheen');
+
+        // Mouse Parallax Logic
+        document.addEventListener('mousemove', (e) => {
+            const windowW = window.innerWidth;
+            const windowH = window.innerHeight;
+            
+            const mouseX = (e.clientX - windowW / 2) / (windowW / 2);
+            const mouseY = (e.clientY - windowH / 2) / (windowH / 2);
+
+            // 1. Rotate the whole card
+            // Limit rotation to 15 degrees
+            const rotX = mouseY * -15; 
+            const rotY = mouseX * 15;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+
+            // 2. Shift inner layers for depth (Parallax)
+            // Mid layer moves slightly opposite to rotation to feel floating
+            cardLayerMid.style.transform = `translateZ(50px) translateX(${mouseX * -10}px) translateY(${mouseY * -10}px)`;
+            
+            // Deep layer moves with rotation for background depth
+            cardLayerDeep.style.transform = `translateZ(20px) translateX(${mouseX * 15}px) translateY(${mouseY * 15}px)`;
+
+            // 3. Move reflection
+            card.style.setProperty('--mouse-x', `${(e.clientX / windowW) * 100}%`);
+            card.style.setProperty('--mouse-y', `${(e.clientY / windowH) * 100}%`);
+        });
+
+        // Reset on leave
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            cardLayerMid.style.transform = `translateZ(50px)`;
+            cardLayerDeep.style.transform = `translateZ(20px)`;
+        });
+
+        // Code Stream Animation
+        const terminal = document.getElementById('code-stream');
+        const lines = [
+            "> connecting to neural_link...",
+            "> handshake: verified",
+            "> loading user_profile(AC)...",
+            "> decrypting badges... [OK]",
+            "> sync_rate: 99.8%",
+            "> quantum_entanglement: stable",
+            "> fetching achievements...",
+            "> status: elite_pioneer",
+            "> awaiting input_"
+        ];
+
+        let lineIndex = 0;
+        let charIndex = 0;
+        let currentText = "";
+
+        function typeWriter() {
+            if (lineIndex < lines.length) {
+                const line = lines[lineIndex];
+                if (charIndex < line.length) {
+                    currentText += line.charAt(charIndex);
+                    terminal.innerText = currentText;
+                    charIndex++;
+                    setTimeout(typeWriter, Math.random() * 50 + 20); // Random typing speed
+                } else {
+                    currentText += "\n";
+                    terminal.innerText = currentText;
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeWriter, 400); // Pause between lines
+                }
+                
+                // Keep scrolled to bottom
+                terminal.scrollTop = terminal.scrollHeight;
+            } else {
+                // Loop
+                setTimeout(() => {
+                    lineIndex = 0;
+                    currentText = "";
+                    terminal.innerText = "";
+                    typeWriter();
+                }, 3000);
+            }
+        }
+        
+        // Start typing
+        typeWriter();
+
+    </script>
+</body>
+</html>
