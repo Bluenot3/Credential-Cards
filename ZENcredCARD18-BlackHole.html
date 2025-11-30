@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Hyper-Singularity MKII</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&family=Rajdhani:wght@300;500;600;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 680px; /* Slightly taller for more data */
+            
+            /* Hyper-Singularity Palette */
+            --void: #000000;
+            --event-horizon: #0a0a12;
+            --accretion-gold: #ffcc00;
+            --accretion-orange: #ff5500;
+            --quantum-blue: #00f3ff;
+            --text-hologram: #e0faff;
+            --alert-red: #ff2a2a;
+            
+            --glass-tint: rgba(10, 15, 20, 0.85);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000 80%),
+                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Containment Unit) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(
+                20px 0, 100% 0, 100% 100%, 
+                calc(100% - 20px) 100%, 0 100%, 0 20px
+            );
+            background: #050508;
+            box-shadow: 
+                0 0 0 1px #222,
+                0 50px 100px -30px rgba(0, 243, 255, 0.15),
+                inset 0 0 100px #000;
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Coolant Lines */
+        .coolant-flow {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 19px,
+                rgba(0, 243, 255, 0.03) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Warning Decals on Chassis */
+        .decal-top-right {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-family: 'Share Tech Mono';
+            font-size: 0.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 4px;
+            transform: rotate(90deg);
+            transform-origin: top right;
+        }
+
+        /* 2. Glass Interface */
+        .glass-panel {
+            position: absolute;
+            inset: 6px;
+            background: var(--glass-tint);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            clip-path: polygon(
+                16px 0, 100% 0, 100% 100%, 
+                calc(100% - 16px) 100%, 0 100%, 0 16px
+            );
+            backdrop-filter: blur(10px);
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* Hex Grid Canvas */
+        canvas#hexCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* 3. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--text-hologram);
+        }
+
+        /* --- Top Telemetry Bar (New) --- */
+        .top-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Share Tech Mono';
+            font-size: 0.55rem;
+            color: var(--quantum-blue);
+            border-bottom: 1px dashed rgba(0, 243, 255, 0.2);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        .status-item { display: flex; gap: 5px; }
+        .status-val { color: #fff; }
+        .blink { animation: blink 2s infinite; }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .brand-block h1 {
+            font-family: 'Kdam Thmor Pro', sans-serif;
+            font-size: 1.6rem;
+            margin: 0;
+            line-height: 0.9;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--quantum-blue);
+        }
+        
+        .brand-block span {
+            font-size: 0.6rem;
+            color: var(--accretion-gold);
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .clearance-badge {
+            text-align: right;
+        }
+        .clearance-lvl {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accretion-orange);
+            line-height: 1;
+        }
+        .clearance-lbl {
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+
+        /* --- Singularity Visual --- */
+        .singularity-stage {
+            position: relative;
+            height: 150px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px #000;
+        }
+        
+        /* Holographic Corner Brackets */
+        .holo-corner {
+            position: absolute;
+            width: 10px; height: 10px;
+            border: 1px solid var(--quantum-blue);
+            opacity: 0.6;
+        }
+        .hc-tl { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+        .hc-tr { top: 5px; right: 5px; border-left: none; border-bottom: none; }
+        .hc-bl { bottom: 5px; left: 5px; border-right: none; border-top: none; }
+        .hc-br { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+        .core-stats {
+            position: absolute;
+            bottom: 5px;
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Share Tech Mono';
+            font-size: 0.5rem;
+            color: var(--accretion-gold);
+            z-index: 5;
+        }
+
+        canvas#coreCanvas {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 10px var(--accretion-orange)); 
+        }
+
+        /* --- Personnel --- */
+        .id-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: linear-gradient(90deg, rgba(255, 85, 0, 0.1), transparent);
+            border-left: 2px solid var(--accretion-orange);
+            position: relative;
+        }
+        
+        /* Vertical side text */
+        .side-text {
+            position: absolute;
+            right: 10px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.2);
+            writing-mode: vertical-rl;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .avatar-ring {
+            width: 55px; height: 55px;
+            border-radius: 50%;
+            background: #000;
+            border: 2px solid var(--accretion-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 85, 0, 0.4);
+        }
+        .avatar-ring::after {
+            content: ''; position: absolute; inset: -3px; border-radius: 50%;
+            border-top: 2px solid var(--quantum-blue); border-bottom: 2px solid var(--quantum-blue);
+            animation: spin 6s linear infinite;
+        }
+        .avatar-txt { font-weight: 700; font-size: 1.4rem; color: #fff; }
+
+        .name-main {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        
+        .role-sub {
+            font-size: 0.7rem;
+            color: var(--quantum-blue);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* --- Fuses (Badges) --- */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 2px;
+        }
+
+        .fuse-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: auto;
+        }
+
+        .fuse-slot {
+            height: 55px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .fuse-slot:hover {
+            border-color: var(--accretion-gold);
+            background: rgba(255, 204, 0, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+        }
+
+        .fuse-filament {
+            width: 18px; height: 18px;
+            fill: rgba(255,255,255,0.5);
+            margin-bottom: 4px;
+            transition: fill 0.2s;
+            z-index: 2;
+        }
+        .fuse-slot:hover .fuse-filament { fill: var(--accretion-gold); filter: drop-shadow(0 0 5px var(--accretion-gold)); }
+        
+        .fuse-lbl { font-size: 0.45rem; color: rgba(255,255,255,0.4); text-transform: uppercase; z-index: 2; font-family: 'Share Tech Mono'; }
+
+        /* Electricity Arc */
+        .arc {
+            position: absolute;
+            top: 50%; left: 0; width: 100%; height: 1px;
+            background: var(--quantum-blue);
+            opacity: 0;
+            box-shadow: 0 0 5px var(--quantum-blue);
+            transition: opacity 0.1s;
+        }
+        .fuse-slot:hover .arc { opacity: 0.8; animation: flicker 0.2s infinite; }
+
+        /* --- Footer Console --- */
+        .footer {
+            margin-top: auto;
+            background: #000;
+            border: 1px solid var(--quantum-blue);
+            padding: 8px;
+            font-family: 'Share Tech Mono';
+            font-size: 0.55rem;
+            color: var(--quantum-blue);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .footer-row { display: flex; justify-content: space-between; }
+        .hash { color: var(--accretion-orange); }
+        .dim { color: rgba(255,255,255,0.3); }
+
+        /* --- Animations --- */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes flicker { 0% { opacity: 0.8; } 50% { opacity: 0.3; } 100% { opacity: 0.8; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="coolant-flow"></div>
+                <div class="decal-top-right">CAUTION: VOID</div>
+            </div>
+
+            <!-- Glass Layer -->
+            <div class="glass-panel">
+                <canvas id="hexCanvas"></canvas>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <!-- New Top Status Bar -->
+                <div class="top-status">
+                    <div class="status-item"><span class="blink">●</span> NET: <span class="status-val">SECURE</span></div>
+                    <div class="status-item">MEM: <span class="status-val">64TB</span></div>
+                    <div class="status-item">TEMP: <span class="status-val" style="color:var(--alert-red)">450K</span></div>
+                </div>
+
+                <div class="header">
+                    <div class="brand-block">
+                        <h1>ZEN.SINGULARITY</h1>
+                        <span>Event Horizon Class</span>
+                    </div>
+                    <div class="clearance-badge">
+                        <div class="clearance-lvl">05</div>
+                        <div class="clearance-lbl">Clearance</div>
+                    </div>
+                </div>
+
+                <!-- Black Hole Core -->
+                <div class="singularity-stage">
+                    <div class="holo-corner hc-tl"></div>
+                    <div class="holo-corner hc-tr"></div>
+                    <div class="holo-corner hc-bl"></div>
+                    <div class="holo-corner hc-br"></div>
+                    <div class="core-stats">
+                        <span>MASS: ∞</span>
+                        <span>GRAVITY: CRITICAL</span>
+                    </div>
+                    <canvas id="coreCanvas"></canvas>
+                </div>
+
+                <div class="id-row">
+                    <div class="avatar-ring">
+                        <div class="avatar-txt">AC</div>
+                    </div>
+                    <div class="user-data">
+                        <div class="name-main">Alex Chen</div>
+                        <div class="role-sub">Void Architect</div>
+                    </div>
+                    <div class="side-text">OPERATIVE</div>
+                </div>
+
+                <div class="grid-header">
+                    <span>Neural Fuses</span>
+                    <span style="color:var(--quantum-blue)">SYS: NOMINAL</span>
+                </div>
+
+                <div class="fuse-grid">
+                    <div class="fuse-slot" title="Processing">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                        <span class="fuse-lbl">Proc</span>
+                    </div>
+                    <div class="fuse-slot" title="Memory">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="fuse-lbl">Mem</span>
+                    </div>
+                    <div class="fuse-slot" title="Logic">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span class="fuse-lbl">Logic</span>
+                    </div>
+                    <div class="fuse-slot" title="Security">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                        <span class="fuse-lbl">Sec</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="fuse-slot" title="Connection">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="fuse-lbl">Link</span>
+                    </div>
+                    <div class="fuse-slot" title="Vision">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="fuse-lbl">Vis</span>
+                    </div>
+                    <div class="fuse-slot" title="Targeting">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="fuse-lbl">Aim</span>
+                    </div>
+                    <div class="fuse-slot" title="Defense">
+                        <div class="arc"></div>
+                        <svg class="fuse-filament" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="fuse-lbl">Def</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="footer-row">
+                        <div>LATENCY: <span>0ms</span></div>
+                        <div>HASH: <span class="hash" id="hashText">...</span></div>
+                    </div>
+                    <div class="footer-row" style="margin-top:2px;">
+                        <span class="dim">ENCRYPTED // SHA-512 // VERIFIED</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const hashText = document.getElementById('hashText');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 2. Hash Animation
+        const chars = '0123456789ABCDEF';
+        setInterval(() => {
+            let str = '';
+            for(let i=0; i<8; i++) str += chars[Math.floor(Math.random() * chars.length)];
+            hashText.innerText = str;
+        }, 100);
+
+        // 3. Hex Grid (Background Canvas)
+        const hexCanvas = document.getElementById('hexCanvas');
+        const hCtx = hexCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const hRect = hexCanvas.getBoundingClientRect();
+        
+        hexCanvas.width = hRect.width * dpr;
+        hexCanvas.height = hRect.height * dpr;
+        hCtx.scale(dpr, dpr);
+        
+        function drawHexGrid() {
+            hCtx.clearRect(0, 0, hRect.width, hRect.height);
+            const size = 20;
+            const h = size * Math.sin(Math.PI / 3);
+            
+            hCtx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
+            hCtx.lineWidth = 1;
+            
+            // Draw grid logic
+            for(let y = 0; y < hRect.height + size; y += size * 1.5) {
+                for(let x = 0; x < hRect.width + size; x += h * 2) {
+                    hCtx.beginPath();
+                    for(let i = 0; i < 6; i++) {
+                        const angle = Math.PI / 3 * i;
+                        const hx = x + size * Math.cos(angle);
+                        const hy = y + size * Math.sin(angle);
+                        if(i===0) hCtx.moveTo(hx, hy); else hCtx.lineTo(hx, hy);
+                    }
+                    hCtx.closePath();
+                    hCtx.stroke();
+                }
+            }
+        }
+        drawHexGrid();
+
+        // 4. Black Hole Singularity (Middle Canvas)
+        const coreCanvas = document.getElementById('coreCanvas');
+        const cCtx = coreCanvas.getContext('2d');
+        const cRect = coreCanvas.getBoundingClientRect();
+        coreCanvas.width = cRect.width * dpr;
+        coreCanvas.height = cRect.height * dpr;
+        cCtx.scale(dpr, dpr);
+        
+        const cx = cRect.width / 2;
+        const cy = cRect.height / 2;
+        let time = 0;
+
+        function drawCore() {
+            cCtx.clearRect(0, 0, cRect.width, cRect.height);
+            time += 0.05;
+            
+            // Accretion Disk (Swirling particles)
+            for(let i=0; i<150; i++) {
+                const angle = time * 0.5 + i * 0.1;
+                const dist = 30 + Math.random() * 50;
+                
+                // Elliptical projection
+                const x = cx + Math.cos(angle) * dist;
+                const y = cy + Math.sin(angle) * (dist * 0.3); // Flatten
+                
+                cCtx.fillStyle = Math.random() > 0.5 ? '#ffcc00' : '#ff5500';
+                cCtx.beginPath();
+                cCtx.arc(x, y, 1.5, 0, Math.PI*2);
+                cCtx.fill();
+            }
+            
+            // Event Horizon (Black Hole)
+            cCtx.fillStyle = '#000';
+            cCtx.beginPath();
+            cCtx.arc(cx, cy, 25, 0, Math.PI*2);
+            cCtx.fill();
+            
+            // Photon Ring (Glow)
+            cCtx.strokeStyle = '#00f3ff';
+            cCtx.lineWidth = 2;
+            cCtx.beginPath();
+            cCtx.arc(cx, cy, 26, 0, Math.PI*2);
+            cCtx.stroke();
+            
+            // Jet (Beams)
+            cCtx.fillStyle = 'rgba(0, 243, 255, 0.2)';
+            cCtx.beginPath();
+            // Upper Beam
+            cCtx.moveTo(cx, cy-25);
+            cCtx.lineTo(cx-5, cy-80);
+            cCtx.lineTo(cx+5, cy-80);
+            cCtx.fill();
+            
+            // Lower Beam
+            cCtx.beginPath();
+            cCtx.moveTo(cx, cy+25);
+            cCtx.lineTo(cx-5, cy+80);
+            cCtx.lineTo(cx+5, cy+80);
+            cCtx.fill();
+
+            requestAnimationFrame(drawCore);
+        }
+        drawCore();
+
+        window.addEventListener('resize', () => {
+            // Resize handler
+        });
+
+    })();
+    </script>
+</body>
+</html>
