@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Chrono-Pharaoh</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Jura:wght@300;500;700&display=swap');
+
+        :root {
+            --card-w: 380px;
+            --card-h: 640px;
+            
+            /* Chrono-Pharaoh Palette */
+            --void-black: #050505;
+            --royal-lapis: #0f1e3d;
+            --royal-gold: #ffd700;
+            --antique-gold: #c5a059;
+            --energy-teal: #00ffcc;
+            
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #020202;
+            /* Tomb Tech Background */
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1500 0%, #000 70%),
+                repeating-linear-gradient(90deg, rgba(197, 160, 89, 0.03) 0px, rgba(197, 160, 89, 0.03) 1px, transparent 1px, transparent 40px);
+            font-family: 'Jura', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Gilded Obsidian) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            /* Obelisk Shape */
+            clip-path: polygon(
+                15px 0, 100% 0, 100% 100%, 0 100%, 0 15px
+            );
+            background: linear-gradient(160deg, #111, #050505);
+            
+            /* Gold Shadow */
+            box-shadow: 
+                0 0 0 2px #222,
+                0 40px 80px -20px rgba(197, 160, 89, 0.15),
+                inset 0 0 60px rgba(0,0,0,0.9);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            border-top: 4px solid var(--antique-gold);
+        }
+
+        /* Sandstorm Canvas */
+        canvas#sandCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* Gold Circuitry Inlay */
+        .circuit-inlay {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L30 10 M30 50 L30 60 M0 30 L10 30 M50 30 L60 30' stroke='%23ffd700' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Specular Shine */
+        .gold-shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 40%, rgba(255, 215, 0, 0.1) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 215, 0, 0.1) 55%, transparent 60%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            transition: transform 0.1s;
+            z-index: 5;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: #e0e0e0;
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 4px;
+            background: var(--royal-gold);
+            box-shadow: 0 0 10px var(--royal-gold);
+        }
+
+        .brand-seal {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.8rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: 1px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+        }
+
+        .dynasty-mark {
+            font-size: 0.6rem;
+            color: var(--energy-teal);
+            border: 1px solid var(--energy-teal);
+            padding: 2px 6px;
+            letter-spacing: 2px;
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        /* --- 3D Pyramid Canvas --- */
+        .pyramid-stage {
+            position: relative;
+            height: 160px;
+            margin-bottom: 25px;
+            background: radial-gradient(circle, rgba(15, 30, 61, 0.6) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(197, 160, 89, 0.1);
+            border-radius: 4px;
+        }
+        
+        .eye-of-horus {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(255, 215, 0, 0.1);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        canvas#pyramidCanvas {
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px var(--royal-gold));
+        }
+
+        /* --- Identity Cartouche --- */
+        .cartouche {
+            border: 2px solid var(--antique-gold);
+            border-radius: 30px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: rgba(15, 30, 61, 0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        /* Ornamental ends */
+        .cartouche::before, .cartouche::after {
+            content: ''; position: absolute; width: 6px; height: 100%;
+            background: var(--royal-gold);
+            top: 0;
+        }
+        .cartouche::before { left: 10px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); width: 2px; }
+        .cartouche::after { right: 10px; width: 2px; }
+
+        .avatar-gold {
+            width: 50px; height: 50px;
+            background: #000;
+            border: 1px solid var(--royal-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--royal-gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .name-ancient {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.4rem;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        
+        .role-tech {
+            font-size: 0.7rem;
+            color: var(--energy-teal);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* --- Glyph Grid (Badges) --- */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: var(--antique-gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .glyph-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .gem-badge {
+            aspect-ratio: 1;
+            background: rgba(15, 30, 61, 0.6); /* Lapis color */
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            clip-path: polygon(15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%, 0% 15%);
+        }
+
+        .gem-badge:hover {
+            background: rgba(15, 30, 61, 0.9);
+            border-color: var(--royal-gold);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Inner bevel effect */
+        .gem-badge::after {
+            content: ''; position: absolute; inset: 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        .gem-icon {
+            width: 22px; height: 22px;
+            fill: #aaa;
+            margin-bottom: 2px;
+            transition: fill 0.3s;
+            z-index: 2;
+        }
+        .gem-badge:hover .gem-icon { fill: var(--royal-gold); filter: drop-shadow(0 0 5px var(--royal-gold)); }
+        
+        .gem-lbl { font-size: 0.5rem; color: rgba(255,255,255,0.5); z-index: 2; text-transform: uppercase; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(197, 160, 89, 0.2);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: var(--antique-gold);
+        }
+        
+        .footer-val { color: var(--energy-teal); font-weight: 700; margin-left: 5px; }
+
+        /* --- Animations --- */
+        @keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="circuit-inlay"></div>
+                <canvas id="sandCanvas"></canvas>
+                <div class="gold-shine" id="glare"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-seal">OSIRIS // AI</div>
+                    <div class="dynasty-mark">DYNASTY V</div>
+                </div>
+
+                <!-- 3D Pyramid -->
+                <div class="pyramid-stage">
+                    <div class="eye-of-horus">👁️</div>
+                    <canvas id="pyramidCanvas"></canvas>
+                </div>
+
+                <div class="cartouche">
+                    <div class="avatar-gold">♕</div>
+                    <div class="user-info">
+                        <div class="name-ancient">Alex Chen</div>
+                        <div class="role-tech">Quantum Pharaoh</div>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <span>Royal Decrees</span>
+                    <span style="color:var(--royal-gold)">ACTIVE</span>
+                </div>
+
+                <div class="glyph-grid">
+                    <div class="gem-badge" title="Wisdom">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>
+                        <span class="gem-lbl">Mind</span>
+                    </div>
+                    <div class="gem-badge" title="Vision">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="gem-lbl">Sight</span>
+                    </div>
+                    <div class="gem-badge" title="Power">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span class="gem-lbl">Energy</span>
+                    </div>
+                    <div class="gem-badge" title="Protection">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="gem-lbl">Ward</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="gem-badge" title="Unity">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="gem-lbl">Link</span>
+                    </div>
+                    <div class="gem-badge" title="Wealth">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                        <span class="gem-lbl">Data</span>
+                    </div>
+                    <div class="gem-badge" title="Order">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                        <span class="gem-lbl">Law</span>
+                    </div>
+                    <div class="gem-badge" title="Eternity">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="gem-lbl">Time</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>ERA: <span class="footer-val">3025 AD</span></div>
+                    <div>KARMA: <span class="footer-val">MA'AT</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const glare = document.getElementById('glare');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Gold Shine
+            const glarePos = -100 + (x * 100);
+            glare.style.transform = `translateX(${glarePos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+        });
+
+        // 2. Sandstorm Particles (Canvas)
+        const sandCanvas = document.getElementById('sandCanvas');
+        const sCtx = sandCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const sRect = sandCanvas.getBoundingClientRect();
+        
+        sandCanvas.width = sRect.width * dpr;
+        sandCanvas.height = sRect.height * dpr;
+        sCtx.scale(dpr, dpr);
+        
+        const sand = [];
+        for(let i=0; i<80; i++) {
+            sand.push({
+                x: Math.random() * sRect.width,
+                y: Math.random() * sRect.height,
+                speedX: Math.random() * 2 + 0.5,
+                size: Math.random() * 1.5,
+                alpha: Math.random() * 0.5
+            });
+        }
+
+        function drawSand() {
+            sCtx.clearRect(0, 0, sRect.width, sRect.height);
+            sCtx.fillStyle = '#ffd700';
+            
+            sand.forEach(p => {
+                p.x += p.speedX;
+                if(p.x > sRect.width) p.x = 0;
+                
+                sCtx.globalAlpha = p.alpha;
+                sCtx.beginPath();
+                sCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                sCtx.fill();
+            });
+            requestAnimationFrame(drawSand);
+        }
+        drawSand();
+
+        // 3. Rotating 3D Pyramid (Canvas)
+        const pCanvas = document.getElementById('pyramidCanvas');
+        const pCtx = pCanvas.getContext('2d');
+        const pRect = pCanvas.getBoundingClientRect();
+        pCanvas.width = pRect.width * dpr;
+        pCanvas.height = pRect.height * dpr;
+        pCtx.scale(dpr, dpr);
+        
+        const cx = pRect.width / 2;
+        const cy = pRect.height / 2 + 20; // Lower center
+        let angle = 0;
+
+        function drawPyramid() {
+            pCtx.clearRect(0, 0, pRect.width, pRect.height);
+            angle += 0.015;
+            
+            const size = 50;
+            const h = 70; // Height of pyramid
+            
+            // Vertices relative to center (0,0,0)
+            // Base square on XZ plane
+            const base = [
+                {x: -size, y: 0, z: -size},
+                {x: size, y: 0, z: -size},
+                {x: size, y: 0, z: size},
+                {x: -size, y: 0, z: size}
+            ];
+            const top = {x: 0, y: -h, z: 0};
+            
+            // Rotate function
+            function rotate(point) {
+                const x = point.x * Math.cos(angle) - point.z * Math.sin(angle);
+                const z = point.x * Math.sin(angle) + point.z * Math.cos(angle);
+                return {x: x, y: point.y, z: z};
+            }
+            
+            // Project function (Perspective)
+            function project(point) {
+                const scale = 300 / (300 + point.z + 100); // +100 to push back
+                return {
+                    x: cx + point.x * scale,
+                    y: cy + point.y * scale
+                };
+            }
+            
+            const rBase = base.map(rotate);
+            const rTop = rotate(top); // Rotates in place (0,0) usually stays
+            
+            const pBase = rBase.map(project);
+            const pTop = project(rTop);
+            
+            pCtx.strokeStyle = '#ffd700';
+            pCtx.lineWidth = 1.5;
+            pCtx.lineJoin = 'round';
+            
+            // Draw Edges to Top
+            for(let i=0; i<4; i++) {
+                pCtx.beginPath();
+                pCtx.moveTo(pTop.x, pTop.y);
+                pCtx.lineTo(pBase[i].x, pBase[i].y);
+                pCtx.stroke();
+            }
+            
+            // Draw Base
+            pCtx.beginPath();
+            pCtx.moveTo(pBase[0].x, pBase[0].y);
+            for(let i=1; i<4; i++) {
+                pCtx.lineTo(pBase[i].x, pBase[i].y);
+            }
+            pCtx.closePath();
+            pCtx.stroke();
+            
+            // Inner Glow Point
+            const grad = pCtx.createRadialGradient(cx, cy - 30, 0, cx, cy - 30, 40);
+            grad.addColorStop(0, 'rgba(0, 255, 204, 0.4)');
+            grad.addColorStop(1, 'transparent');
+            pCtx.fillStyle = grad;
+            pCtx.beginPath();
+            pCtx.arc(cx, cy - 30, 40, 0, Math.PI*2);
+            pCtx.fill();
+
+            requestAnimationFrame(drawPyramid);
+        }
+        drawPyramid();
+
+        window.addEventListener('resize', () => {
+            // Resize logic placeholder
+        });
+
+    })();
+    </script>
+</body>
+</html>
