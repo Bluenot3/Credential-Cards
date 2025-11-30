@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Holo-Prism</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 640px;
+            
+            /* Holo Palette */
+            --holo-bg: #030008;
+            --neon-cyan: #00f3ff;
+            --neon-magenta: #ff00ff;
+            --neon-yellow: #ffee00;
+            --glass-tint: rgba(255, 255, 255, 0.01);
+            
+            --border-glow: 0 0 20px rgba(0, 243, 255, 0.5);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--holo-bg);
+            /* Cyber Grid Background */
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(20, 0, 40, 1) 0%, #000 100%);
+            background-size: 50px 50px, 50px 50px, 100% 100%;
+            background-position: center center;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. The Holo Chassis --- */
+        .holo-plate {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: var(--glass-tint);
+            backdrop-filter: blur(8px) brightness(1.2);
+            -webkit-backdrop-filter: blur(8px) brightness(1.2);
+            
+            /* The Spectral Border */
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 
+                0 0 15px rgba(0, 243, 255, 0.2),
+                inset 0 0 30px rgba(255, 0, 255, 0.1);
+                
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Rainbow Diffraction Gradient */
+        .spectrum-foil {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(0, 243, 255, 0.2) 20%, 
+                rgba(255, 0, 255, 0.2) 40%, 
+                rgba(255, 238, 0, 0.2) 60%, 
+                rgba(0, 243, 255, 0.2) 80%, 
+                transparent 100%
+            );
+            mix-blend-mode: color-dodge;
+            opacity: 0.6;
+            filter: blur(30px);
+            /* Movement driven by JS tilt */
+            transition: transform 0.1s;
+            pointer-events: none;
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.3) 3px
+            );
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.4;
+        }
+
+        /* 2. Holographic Frame (Floating) */
+        .projector-frame {
+            position: absolute;
+            inset: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            opacity: 0.5;
+            clip-path: polygon(
+                0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%
+            );
+        }
+        
+        /* Glowing corners */
+        .corner-light {
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid var(--neon-cyan);
+            opacity: 0.8;
+            filter: drop-shadow(0 0 5px var(--neon-cyan));
+            transition: all 0.3s ease;
+        }
+        .cl-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        .cl-tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+        .cl-bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+        .cl-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+        /* 3. Floating Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            z-index: 10;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .brand-h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px var(--neon-cyan));
+        }
+        
+        .holo-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            color: var(--neon-magenta);
+            border: 1px solid var(--neon-magenta);
+            padding: 2px 6px;
+            box-shadow: 0 0 8px var(--neon-magenta);
+            animation: flicker 4s infinite;
+        }
+
+        /* --- Hologram Projector (Canvas) --- */
+        .holo-stage {
+            position: relative;
+            height: 160px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Light beam effect */
+            background: radial-gradient(ellipse at 50% 50%, rgba(0, 243, 255, 0.15) 0%, transparent 70%);
+        }
+        
+        canvas#holoCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+        }
+
+        /* --- Identity --- */
+        .identity-grid {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hex-avatar {
+            width: 80px; height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hex-border {
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: var(--neon-cyan);
+            animation: spin-slow 10s linear infinite;
+        }
+        .hex-inner {
+            position: absolute;
+            inset: 2px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .user-initials {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 0px var(--neon-magenta), -2px -2px 0px var(--neon-cyan);
+        }
+
+        .user-details h2 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .user-details span {
+            font-size: 0.8rem;
+            color: var(--neon-yellow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--neon-yellow);
+        }
+
+        /* --- Hard Light Badges --- */
+        .badge-array {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: auto;
+        }
+
+        .holo-badge {
+            aspect-ratio: 1;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+        }
+
+        .holo-badge:hover {
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 15px var(--neon-magenta), inset 0 0 10px var(--neon-magenta);
+            transform: translateZ(20px);
+            z-index: 10;
+        }
+
+        .holo-badge svg {
+            width: 24px; height: 24px;
+            fill: #fff;
+            filter: drop-shadow(0 0 2px #fff);
+        }
+        
+        /* Corner accents for badges */
+        .holo-badge::before, .holo-badge::after {
+            content: ''; position: absolute; background: #fff; transition: background 0.2s;
+        }
+        .holo-badge::before { top: -1px; left: -1px; width: 4px; height: 1px; }
+        .holo-badge::after { top: -1px; left: -1px; width: 1px; height: 4px; }
+        .holo-badge:hover::before, .holo-badge:hover::after { background: var(--neon-magenta); }
+
+        /* --- Footer Data --- */
+        .data-footer {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .data-point {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .data-val { font-size: 1rem; color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan); }
+        .data-lbl { font-size: 0.6rem; color: rgba(255,255,255,0.5); }
+
+        /* --- Glitch/Chromatic Aberration Effect --- */
+        .chromatic-layer {
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E");
+            mix-blend-mode: color-dodge;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.5; }
+        }
+        
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- 1. Holographic Chassis -->
+            <div class="holo-plate">
+                <div class="spectrum-foil" id="spectrum"></div>
+                <div class="scanlines"></div>
+                <div class="chromatic-layer"></div>
+            </div>
+
+            <!-- 2. Projector Frame -->
+            <div class="projector-frame">
+                <div class="corner-light cl-tl"></div>
+                <div class="corner-light cl-tr"></div>
+                <div class="corner-light cl-bl"></div>
+                <div class="corner-light cl-br"></div>
+            </div>
+
+            <!-- 3. Floating Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <h1 class="brand-h1">ZEN.PRISM</h1>
+                    <div class="holo-tag">HOLO-CLASS</div>
+                </div>
+
+                <!-- WebGL-style Particle Stage -->
+                <div class="holo-stage">
+                    <canvas id="holoCanvas"></canvas>
+                </div>
+
+                <div class="identity-grid">
+                    <div class="hex-avatar">
+                        <div class="hex-border"></div>
+                        <div class="hex-inner">
+                            <span class="user-initials">AC</span>
+                        </div>
+                    </div>
+                    <div class="user-details">
+                        <h2>Alex Chen</h2>
+                        <span>Neural Architect</span>
+                    </div>
+                </div>
+
+                <div class="badge-array">
+                    <div class="holo-badge" title="Neural Net">
+                        <svg viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Ethics">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Quantum">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Security">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Uplink">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Vision">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Targeting">
+                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    </div>
+                    <div class="holo-badge" title="Defense">
+                         <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    </div>
+                </div>
+
+                <div class="data-footer">
+                    <div class="data-point">
+                        <span class="data-val">99.8%</span>
+                        <span class="data-lbl">Sync Rate</span>
+                    </div>
+                    <div class="data-point" style="align-items: flex-end;">
+                        <span class="data-val">Omega</span>
+                        <span class="data-lbl">Clearance</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const spectrum = document.getElementById('spectrum');
+
+        // 1. Holographic Tilt
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Move the spectrum foil background to create iridescence
+            const foilX = -50 + (x * 30);
+            const foilY = -50 + (y * 30);
+            const foilRot = (x * y) * 90;
+            
+            spectrum.style.transform = `translate(${foilX}%, ${foilY}%) rotate(${foilRot}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             spectrum.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+        });
+
+        // 2. Particle Vortex (Canvas)
+        const canvas = document.getElementById('holoCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        
+        const particles = [];
+        const count = 40;
+        let animTime = 0;
+
+        // Init Particles
+        for(let i=0; i<count; i++) {
+            particles.push({
+                angle: (i / count) * Math.PI * 2,
+                radius: 20 + Math.random() * 40,
+                speed: 0.02 + Math.random() * 0.03,
+                offsetY: (Math.random() - 0.5) * 20
+            });
+        }
+
+        function drawVortex() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            animTime += 0.02;
+            
+            // Central Singularity
+            const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+            gradient.addColorStop(0.4, 'rgba(0, 243, 255, 0.4)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Rotating Particles
+            particles.forEach((p, i) => {
+                p.angle += p.speed;
+                
+                // Orbit mechanics
+                const r = p.radius + Math.sin(animTime + i) * 10;
+                const x = cx + Math.cos(p.angle) * r;
+                const y = cy + Math.sin(p.angle) * (r * 0.4) + p.offsetY; // Flatten orbit
+                
+                // Depth fading
+                const depth = Math.sin(p.angle); // -1 to 1 (back to front)
+                const alpha = (depth + 1.5) / 2.5; // range 0.2 to 1
+                const size = (depth + 2) * 1.5;
+                
+                ctx.fillStyle = i % 2 === 0 ? '#00f3ff' : '#ff00ff';
+                ctx.globalAlpha = alpha;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Connect nearby
+                const nextP = particles[(i + 1) % count];
+                const nx = cx + Math.cos(nextP.angle) * (nextP.radius + Math.sin(animTime + i+1) * 10);
+                const ny = cy + Math.sin(nextP.angle) * ((nextP.radius + Math.sin(animTime + i+1) * 10) * 0.4) + nextP.offsetY;
+                
+                const dist = Math.sqrt((x-nx)**2 + (y-ny)**2);
+                if (dist < 40) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(nx, ny);
+                    ctx.stroke();
+                }
+            });
+            
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(drawVortex);
+        }
+        drawVortex();
+    })();
+    </script>
+</body>
+</html>
