@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Cyber-Soul</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&family=Rajdhani:wght@300;500;700&family=Audiowide&display=swap');
+
+        :root {
+            /* Compact Dimensions */
+            --card-w: 380px;
+            --card-h: 600px;
+            
+            /* Cyber-Soul Palette */
+            --soul-dark: #090014;
+            --soul-violet: #240046;
+            
+            --neon-coral: #ff2a6d;
+            --neon-teal: #05d9e8;
+            --neon-white: #d1f7ff;
+            --neon-purple: #7700ff;
+            
+            --glass-soul: rgba(20, 0, 40, 0.75);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--soul-dark);
+            /* Ethereal Background */
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(5, 217, 232, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(255, 42, 109, 0.15) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 1600px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Soul Glass) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(170deg, rgba(20, 0, 40, 0.9), #000);
+            
+            /* Neon Rim Lighting */
+            box-shadow: 
+                0 0 0 1px rgba(255, 42, 109, 0.3),
+                0 20px 50px -10px rgba(119, 0, 255, 0.4),
+                inset 0 0 60px rgba(5, 217, 232, 0.1);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            /* Slight inner border */
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Spirit Particles Background */
+        canvas#spiritCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Chromatic Sheen */
+        .soul-sheen {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(5, 217, 232, 0.1) 25%, 
+                rgba(255, 42, 109, 0.1) 50%, 
+                rgba(119, 0, 255, 0.1) 75%, 
+                transparent 100%
+            );
+            filter: blur(40px);
+            animation: rotate-sheen 10s linear infinite;
+            pointer-events: none;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--neon-white);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(5, 217, 232, 0.3);
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 30%; height: 2px;
+            background: var(--neon-teal);
+            box-shadow: 0 0 10px var(--neon-teal);
+        }
+
+        .brand-logo {
+            font-family: 'Zen Dots', cursive;
+            font-size: 1.6rem;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-purple);
+            letter-spacing: 1px;
+        }
+        
+        .brand-sub {
+            font-size: 0.6rem;
+            color: var(--neon-coral);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+
+        .soul-tag {
+            font-family: 'Audiowide', cursive;
+            font-size: 0.6rem;
+            color: var(--neon-teal);
+            border: 1px solid var(--neon-teal);
+            padding: 4px 8px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+        }
+
+        /* --- Central Vis (Soul Core) --- */
+        .core-stage {
+            position: relative;
+            height: 140px;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        canvas#coreCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 15px var(--neon-purple));
+        }
+        
+        .core-label {
+            position: absolute;
+            bottom: 8px;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* --- Identity --- */
+        .id-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.1), transparent);
+            padding: 10px;
+            border-radius: 12px;
+            border-left: 3px solid var(--neon-coral);
+        }
+
+        .avatar-circle {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: #000;
+            border: 2px solid var(--neon-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.4);
+            position: relative;
+        }
+        
+        /* Rotating ring around avatar */
+        .avatar-circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px dashed var(--neon-purple);
+            animation: spin-slow 10s linear infinite;
+        }
+
+        .name-main {
+            font-family: 'Zen Dots', cursive;
+            font-size: 1.4rem;
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+            text-shadow: 2px 2px 0 var(--neon-purple);
+        }
+        
+        .role-sub {
+            font-size: 0.7rem;
+            color: var(--neon-teal);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* --- Aura Meter --- */
+        .aura-section {
+            margin-bottom: 20px;
+        }
+        
+        .aura-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 6px;
+        }
+        
+        .aura-bar-bg {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .aura-bar-fill {
+            height: 100%;
+            width: 92%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-coral), var(--neon-teal));
+            background-size: 200% 100%;
+            animation: gradient-slide 3s linear infinite;
+            box-shadow: 0 0 10px var(--neon-coral);
+        }
+
+        /* --- Chakra Grid (Badges) --- */
+        .grid-title {
+            font-size: 0.6rem;
+            color: var(--neon-coral);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-line { flex: 1; height: 1px; background: rgba(255, 42, 109, 0.3); }
+
+        .chakra-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .chakra-node {
+            aspect-ratio: 1;
+            background: rgba(119, 0, 255, 0.1);
+            border: 1px solid rgba(119, 0, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chakra-node:hover {
+            background: rgba(5, 217, 232, 0.15);
+            border-color: var(--neon-teal);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.4);
+        }
+
+        .node-icon { width: 20px; height: 20px; fill: rgba(255,255,255,0.8); margin-bottom: 4px; transition: fill 0.2s; }
+        .chakra-node:hover .node-icon { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+        
+        .node-lbl { font-size: 0.5rem; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+
+        /* --- Footer --- */
+        .soul-footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            color: var(--neon-white);
+        }
+        
+        .footer-stat span { color: var(--neon-coral); font-weight: 700; margin-left: 5px; }
+
+        /* --- Animations --- */
+        @keyframes rotate-sheen { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes gradient-slide { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <canvas id="spiritCanvas"></canvas>
+                <div class="soul-sheen"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div>
+                        <div class="brand-logo">ZEN//SOUL</div>
+                        <div class="brand-sub">Digital Spirit Interface</div>
+                    </div>
+                    <div class="soul-tag">ETHER-CLASS</div>
+                </div>
+
+                <!-- 3D Core Visual -->
+                <div class="core-stage">
+                    <canvas id="coreCanvas"></canvas>
+                    <div class="core-label">SOUL RESONANCE</div>
+                </div>
+
+                <div class="id-card">
+                    <div class="avatar-circle">⚡</div>
+                    <div>
+                        <div class="name-main">Alex Chen</div>
+                        <div class="role-sub">Cyber-Shaman // Lv. 99</div>
+                    </div>
+                </div>
+
+                <div class="aura-section">
+                    <div class="aura-header">
+                        <span>Aura Stability</span>
+                        <span style="color:var(--neon-teal)">100%</span>
+                    </div>
+                    <div class="aura-bar-bg">
+                        <div class="aura-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div class="grid-title">
+                    <span>Soul Chakras</span>
+                    <div class="grid-line"></div>
+                </div>
+
+                <div class="chakra-grid">
+                    <div class="chakra-node" title="Root">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="node-lbl">Root</span>
+                    </div>
+                    <div class="chakra-node" title="Sacral">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="node-lbl">Sacral</span>
+                    </div>
+                    <div class="chakra-node" title="Solar">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="node-lbl">Solar</span>
+                    </div>
+                    <div class="chakra-node" title="Heart">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span class="node-lbl">Heart</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="chakra-node" title="Throat">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+                        <span class="node-lbl">Voice</span>
+                    </div>
+                    <div class="chakra-node" title="Third Eye">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="node-lbl">Eye</span>
+                    </div>
+                    <div class="chakra-node" title="Crown">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.87L12 5.84zM5.5 13l2.75 3.5H3.75L5.5 13zm13 0l1.75 3.5h-3.5L18.5 13z"/></svg>
+                        <span class="node-lbl">Crown</span>
+                    </div>
+                    <div class="chakra-node" title="Aura">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-5.5l1.64-2.73L12 8l.36 5.77L14 16.5h-4z"/></svg>
+                        <span class="node-lbl">Aura</span>
+                    </div>
+                </div>
+
+                <div class="soul-footer">
+                    <div class="footer-stat">Karma: <span>999</span></div>
+                    <div class="footer-stat">Spirit ID: <span>#001-A</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 2. Spirit Particles (Background)
+        const spiritCanvas = document.getElementById('spiritCanvas');
+        const sCtx = spiritCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const sRect = spiritCanvas.getBoundingClientRect();
+        
+        spiritCanvas.width = sRect.width * dpr;
+        spiritCanvas.height = sRect.height * dpr;
+        sCtx.scale(dpr, dpr);
+        
+        const spirits = [];
+        for(let i=0; i<30; i++) {
+            spirits.push({
+                x: Math.random() * sRect.width,
+                y: Math.random() * sRect.height,
+                size: Math.random() * 2,
+                speedY: -(Math.random() * 0.5 + 0.2),
+                alpha: Math.random() * 0.5
+            });
+        }
+
+        function drawSpirits() {
+            sCtx.clearRect(0, 0, sRect.width, sRect.height);
+            
+            spirits.forEach(s => {
+                s.y += s.speedY;
+                if(s.y < 0) s.y = sRect.height;
+                
+                sCtx.fillStyle = `rgba(5, 217, 232, ${s.alpha})`;
+                sCtx.beginPath();
+                sCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                sCtx.fill();
+            });
+            requestAnimationFrame(drawSpirits);
+        }
+        drawSpirits();
+
+        // 3. 3D Icosahedron Core (Middle Canvas)
+        const coreCanvas = document.getElementById('coreCanvas');
+        const cCtx = coreCanvas.getContext('2d');
+        const cRect = coreCanvas.getBoundingClientRect();
+        coreCanvas.width = cRect.width * dpr;
+        coreCanvas.height = cRect.height * dpr;
+        cCtx.scale(dpr, dpr);
+        
+        const cx = cRect.width / 2;
+        const cy = cRect.height / 2;
+        let angle = 0;
+
+        function drawCore() {
+            cCtx.clearRect(0, 0, cRect.width, cRect.height);
+            angle += 0.01;
+            
+            const r = 35;
+            // Vertices for a simple geometric shape (approx Icosahedron)
+            const vertices = [];
+            const t = (1 + Math.sqrt(5)) / 2;
+            
+            // Generate some vertices
+            vertices.push([-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0]);
+            vertices.push([0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t]);
+            vertices.push([t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]);
+
+            // Rotate and Draw
+            cCtx.strokeStyle = '#ff2a6d';
+            cCtx.lineWidth = 1.5;
+            
+            vertices.forEach((v, i) => {
+                let x = v[0] * r;
+                let y = v[1] * r;
+                let z = v[2] * r;
+                
+                // Rotate Y
+                let tempX = x * Math.cos(angle) - z * Math.sin(angle);
+                let tempZ = x * Math.sin(angle) + z * Math.cos(angle);
+                x = tempX; z = tempZ;
+                
+                // Rotate X
+                let tempY = y * Math.cos(angle*0.5) - z * Math.sin(angle*0.5);
+                tempZ = y * Math.sin(angle*0.5) + z * Math.cos(angle*0.5);
+                y = tempY; z = tempZ;
+                
+                // Project
+                const scale = 200 / (200 + z);
+                const px = cx + x * scale;
+                const py = cy + y * scale;
+                
+                // Draw Nodes
+                cCtx.fillStyle = '#05d9e8';
+                cCtx.beginPath();
+                cCtx.arc(px, py, 2, 0, Math.PI*2);
+                cCtx.fill();
+                
+                // Simple connections (just to nearest for visual effect)
+                // In a real 3D engine we'd define edges
+                if (i > 0) {
+                    cCtx.beginPath();
+                    // Connect to previous for abstract shape
+                    // This creates a cool "shifting" geometry rather than a rigid wireframe
+                    const prevV = vertices[i-1]; 
+                    // Re-calculate prev point pos (simplified for demo perf)
+                    // Just drawing lines to center creates a "star"
+                    cCtx.moveTo(cx, cy); 
+                    cCtx.lineTo(px, py);
+                    cCtx.globalAlpha = 0.3;
+                    cCtx.stroke();
+                    cCtx.globalAlpha = 1;
+                }
+            });
+            
+            // Outer Ring
+            cCtx.strokeStyle = 'rgba(119, 0, 255, 0.5)';
+            cCtx.beginPath();
+            cCtx.arc(cx, cy, 55, 0, Math.PI*2);
+            cCtx.stroke();
+
+            requestAnimationFrame(drawCore);
+        }
+        drawCore();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            // Re-init canvas dims
+        });
+
+    })();
+    </script>
+</body>
+</html>
