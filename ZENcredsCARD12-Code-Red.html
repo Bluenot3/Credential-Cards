@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Crimson Flux</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --card-w: 380px;
+            --card-h: 620px;
+            
+            /* Crimson Flux Palette */
+            --void-dark: #050202;
+            --flux-red: #ff003c;
+            --flux-orange: #ff5e00;
+            --flux-white: #fff0f5;
+            --carbon-black: #0f0f12;
+            
+            --border-glow: 0 0 20px rgba(255, 0, 60, 0.4);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void-dark);
+            /* Red Alert Background */
+            background-image: 
+                repeating-linear-gradient(45deg, rgba(20, 5, 5, 1) 0px, rgba(20, 5, 5, 1) 2px, transparent 2px, transparent 10px),
+                radial-gradient(circle at 50% 50%, #1a0505 0%, #000 100%);
+            font-family: 'Oxanium', cursive;
+            perspective: 1600px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.08s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Obsidian Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(30, 10, 10, 0.9), rgba(10, 5, 5, 0.95));
+            border-radius: 20px;
+            /* Industrial Cutout Shape */
+            clip-path: polygon(
+                20px 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 
+                0 100%, 0 20px
+            );
+            
+            /* Heat Glow Shadow */
+            box-shadow: 
+                0 0 0 1px rgba(255, 0, 60, 0.2),
+                0 30px 80px -20px rgba(255, 0, 60, 0.2);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Hazard Stripes overlay */
+        .hazard-strip {
+            position: absolute;
+            top: 20px; right: -30px;
+            width: 100px; height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--flux-red),
+                var(--flux-red) 5px,
+                #000 5px,
+                #000 10px
+            );
+            transform: rotate(45deg);
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        /* Ember Canvas Layer */
+        canvas#emberCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Red Glare */
+        .thermal-glare {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 40%, rgba(255, 0, 60, 0.1) 45%, rgba(255, 200, 200, 0.2) 50%, rgba(255, 0, 60, 0.1) 55%, transparent 60%);
+            transform: translateX(-100%);
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+            transition: transform 0.1s;
+            z-index: 5;
+        }
+
+        /* 2. Metal Frame Overlay */
+        .frame-plate {
+            position: absolute;
+            inset: 4px;
+            border: 2px solid rgba(255, 0, 60, 0.3);
+            clip-path: polygon(
+                18px 0, 100% 0, 100% calc(100% - 38px), calc(100% - 38px) 100%, 
+                0 100%, 0 18px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* --- 3. Content --- */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--flux-white);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--flux-red);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .brand-zone {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .hazard-icon {
+            font-size: 1.2rem;
+            animation: flash 2s infinite;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #fff, var(--flux-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .level-indicator {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--flux-orange);
+            border: 1px solid var(--flux-orange);
+            padding: 2px 6px;
+            background: rgba(255, 94, 0, 0.1);
+        }
+
+        /* --- Reactor Core (Canvas) --- */
+        .reactor-container {
+            position: relative;
+            height: 160px;
+            margin-bottom: 25px;
+            background: radial-gradient(circle, rgba(255,0,60,0.1) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,0,60,0.2);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .reactor-overlay {
+            position: absolute;
+            bottom: 5px; right: 5px;
+            font-size: 0.6rem;
+            color: var(--flux-red);
+            font-family: 'Share Tech Mono';
+        }
+
+        canvas#coreCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px var(--flux-red));
+        }
+
+        /* --- Profile Section --- */
+        .profile-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .avatar-shards {
+            width: 70px; height: 70px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .shard-img {
+            width: 100%; height: 100%;
+            background: #111;
+            clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--flux-red);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shard-img::before {
+            content: 'AC';
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--flux-white);
+            z-index: 2;
+        }
+        
+        /* Spinning border */
+        .shard-spinner {
+            position: absolute;
+            inset: -4px;
+            border: 2px dashed var(--flux-orange);
+            border-radius: 50%;
+            animation: spin 8s linear infinite;
+            opacity: 0.5;
+        }
+
+        .user-data h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            line-height: 0.9;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .user-data span {
+            font-size: 0.75rem;
+            color: var(--flux-red);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* --- Flux Grid (Badges) --- */
+        .grid-header {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+        }
+
+        .flux-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .flux-node {
+            aspect-ratio: 1;
+            background: rgba(255, 0, 60, 0.05);
+            border: 1px solid rgba(255, 0, 60, 0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+        }
+
+        .flux-node:hover {
+            background: rgba(255, 0, 60, 0.2);
+            border-color: var(--flux-white);
+            box-shadow: 0 0 15px var(--flux-red);
+            transform: translateZ(15px);
+        }
+
+        .flux-node svg {
+            width: 20px; height: 20px;
+            fill: #aaa;
+            transition: fill 0.2s;
+        }
+        .flux-node:hover svg { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+
+        /* Cooling Vents */
+        .vent-system {
+            position: absolute;
+            right: 0; top: 180px; bottom: 180px; width: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .vent-slot {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s;
+        }
+        .vent-slot.active { background: var(--flux-orange); box-shadow: 0 0 8px var(--flux-orange); }
+
+        /* --- Footer Ticker --- */
+        .footer {
+            margin-top: auto;
+            background: rgba(20, 5, 5, 0.8);
+            border-top: 1px solid var(--flux-red);
+            padding: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            font-family: 'Share Tech Mono';
+            font-size: 0.65rem;
+            color: var(--flux-orange);
+            position: relative;
+        }
+        
+        .ticker-text {
+            display: inline-block;
+            animation: ticker 10s linear infinite;
+        }
+
+        /* --- Animations --- */
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="hazard-strip"></div>
+                <canvas id="emberCanvas"></canvas>
+                <div class="thermal-glare" id="glare"></div>
+            </div>
+            
+            <div class="frame-plate"></div>
+
+            <!-- Side Vents -->
+            <div class="vent-system" id="vents">
+                <div class="vent-slot"></div><div class="vent-slot"></div>
+                <div class="vent-slot"></div><div class="vent-slot"></div>
+                <div class="vent-slot"></div><div class="vent-slot"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-zone">
+                        <div class="hazard-icon">☢</div>
+                        <span class="brand-title">ZEN.FLUX</span>
+                    </div>
+                    <span class="level-indicator">HEAT: CRITICAL</span>
+                </div>
+
+                <!-- Reactor Canvas -->
+                <div class="reactor-container">
+                    <div class="reactor-overlay">OUTPUT: 1.21 GW</div>
+                    <canvas id="coreCanvas"></canvas>
+                </div>
+
+                <div class="profile-row">
+                    <div class="avatar-shards">
+                        <div class="shard-spinner"></div>
+                        <div class="shard-img"></div>
+                    </div>
+                    <div class="user-data">
+                        <h2>Alex Chen</h2>
+                        <span>Core Engineer // Class S</span>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <span>FLUX CAPACITORS</span>
+                    <span style="color:var(--flux-red)">UNSTABLE</span>
+                </div>
+
+                <div class="flux-grid">
+                    <div class="flux-node" title="Power">
+                        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Shields">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Radiation">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Targeting">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="flux-node" title="Neural">
+                        <svg viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Optics">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Lock">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                    </div>
+                    <div class="flux-node" title="Cooling">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="ticker-text">
+                        WARNING: TEMPERATURE CRITICAL /// SYSTEM PURGE REQUIRED /// CORE INTEGRITY: 45% /// UNAUTHORIZED ACCESS DETECTED /// INITIATING LOCKDOWN
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const glare = document.getElementById('glare');
+        const vents = document.querySelectorAll('.vent-slot');
+
+        // 1. Tilt Physics & Vent Reaction
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            // Rotation
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Glare
+            const glarePos = -100 + (x * 100);
+            glare.style.transform = `translateX(${glarePos}%) skewX(-20deg)`;
+
+            // Light up vents based on proximity to right edge
+            const proximity = x; // -1 to 1
+            vents.forEach((v, i) => {
+                if(proximity > 0.5 - (i * 0.1)) {
+                    v.classList.add('active');
+                } else {
+                    v.classList.remove('active');
+                }
+            });
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+             vents.forEach(v => v.classList.remove('active'));
+        });
+
+        // 2. Rising Embers (Canvas)
+        const emberCanvas = document.getElementById('emberCanvas');
+        const eCtx = emberCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const eRect = emberCanvas.getBoundingClientRect();
+        
+        emberCanvas.width = eRect.width * dpr;
+        emberCanvas.height = eRect.height * dpr;
+        eCtx.scale(dpr, dpr);
+        
+        const embers = [];
+        for(let i=0; i<60; i++) {
+            embers.push({
+                x: Math.random() * eRect.width,
+                y: eRect.height + Math.random() * 50,
+                speed: 1 + Math.random() * 3,
+                size: Math.random() * 2,
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        function drawEmbers() {
+            eCtx.clearRect(0, 0, eRect.width, eRect.height);
+            eCtx.fillStyle = '#ff5e00';
+            
+            embers.forEach(p => {
+                p.y -= p.speed;
+                p.x += Math.sin(p.wobble) * 0.5;
+                p.wobble += 0.1;
+                
+                if(p.y < -10) {
+                    p.y = eRect.height + 10;
+                    p.x = Math.random() * eRect.width;
+                }
+                
+                eCtx.globalAlpha = Math.max(0, p.y / eRect.height);
+                eCtx.beginPath();
+                eCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                eCtx.fill();
+            });
+            requestAnimationFrame(drawEmbers);
+        }
+        drawEmbers();
+
+        // 3. Reactor Core (Canvas)
+        const coreCanvas = document.getElementById('coreCanvas');
+        const cCtx = coreCanvas.getContext('2d');
+        const cRect = coreCanvas.getBoundingClientRect();
+        
+        coreCanvas.width = cRect.width * dpr;
+        coreCanvas.height = cRect.height * dpr;
+        cCtx.scale(dpr, dpr);
+        
+        const cx = cRect.width / 2;
+        const cy = cRect.height / 2;
+        let cTime = 0;
+
+        function drawCore() {
+            cCtx.clearRect(0, 0, cRect.width, cRect.height);
+            cTime += 0.05;
+            
+            // Jitter for instability
+            const jX = (Math.random() - 0.5) * 2;
+            const jY = (Math.random() - 0.5) * 2;
+            
+            // Core Sun
+            const grad = cCtx.createRadialGradient(cx+jX, cy+jY, 0, cx+jX, cy+jY, 40);
+            grad.addColorStop(0, '#fff');
+            grad.addColorStop(0.2, '#ffeb3b');
+            grad.addColorStop(0.5, '#ff003c');
+            grad.addColorStop(1, 'transparent');
+            
+            cCtx.fillStyle = grad;
+            cCtx.beginPath();
+            cCtx.arc(cx+jX, cy+jY, 40, 0, Math.PI*2);
+            cCtx.fill();
+            
+            // Rotating Rings
+            cCtx.lineWidth = 1;
+            cCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            
+            for(let i=0; i<3; i++) {
+                cCtx.beginPath();
+                const rx = 30 + i*15;
+                const ry = 10 + i*5;
+                const rot = cTime * (i%2===0 ? 1 : -1) + (i*Math.PI/3);
+                
+                for(let a=0; a<=Math.PI*2; a+=0.1) {
+                    const x = cx + rx * Math.cos(a) * Math.cos(rot) - ry * Math.sin(a) * Math.sin(rot);
+                    const y = cy + rx * Math.cos(a) * Math.sin(rot) + ry * Math.sin(a) * Math.cos(rot);
+                    if(a===0) cCtx.moveTo(x,y); else cCtx.lineTo(x,y);
+                }
+                cCtx.stroke();
+            }
+            
+            requestAnimationFrame(drawCore);
+        }
+        drawCore();
+
+        window.addEventListener('resize', () => {
+            // Placeholder for resize logic
+        });
+
+    })();
+    </script>
+</body>
+</html>
