@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Celestial Vanguard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --card-w: 420px;
+            --card-h: 680px;
+            
+            /* Celestial Palette */
+            --void-bg: #030407;
+            --starlight-gold: #ffd700;
+            --starlight-pale: #fff8e7;
+            --nebula-blue: #2d34ae;
+            --nebula-purple: #7b2cbf;
+            
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void-bg);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #0a0e17 0%, #000 100%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50L51 51' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E");
+            font-family: 'Space Mono', monospace;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- Ambient Nebula --- */
+        .nebula-cloud {
+            position: absolute;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            animation: float-nebula 20s infinite alternate;
+            z-index: 0;
+        }
+        .nc-1 { top: -100px; left: -100px; background: var(--nebula-blue); }
+        .nc-2 { bottom: -100px; right: -100px; background: var(--nebula-purple); animation-delay: -5s; }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Star-Glass Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 200px 200px 20px 20px; /* Arch Shape */
+            background: rgba(10, 14, 23, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            
+            /* Gold Border */
+            border: 1px solid rgba(191, 149, 63, 0.3);
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0,0.5),
+                0 30px 60px -15px rgba(0, 0, 0, 0.9),
+                inset 0 0 60px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(45, 52, 174, 0.1); /* Subtle nebula glow */
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Inner Starfield Canvas */
+        canvas#starCanvas {
+            position: absolute;
+            inset: 0;
+            opacity: 0.8;
+            mix-blend-mode: screen;
+        }
+
+        /* Gold Rim Overlay */
+        .gold-rim {
+            position: absolute;
+            inset: 4px;
+            border-radius: 196px 196px 16px 16px;
+            border: 1px solid transparent;
+            background: var(--gold-gradient) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: #fff;
+            align-items: center;
+        }
+
+        /* --- Header --- */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(191, 149, 63, 0.3);
+            margin: 0;
+        }
+
+        .brand-sub {
+            font-size: 0.6rem;
+            color: rgba(255, 248, 231, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .brand-sub::before, .brand-sub::after {
+            content: ''; position: absolute; top: 50%; width: 20px; height: 1px; background: linear-gradient(90deg, transparent, rgba(191,149,63,0.5));
+        }
+        .brand-sub::before { right: 100%; margin-right: 10px; }
+        .brand-sub::after { left: 100%; margin-left: 10px; transform: scaleX(-1); }
+
+        /* --- Orbital Core --- */
+        .orbital-stage {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        canvas#dysonCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 15px rgba(45, 52, 174, 0.5));
+        }
+
+        /* --- Identity --- */
+        .identity-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .name-plate {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #fff;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-plate {
+            font-size: 0.7rem;
+            color: var(--starlight-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* --- Constellation Grid (Badges) --- */
+        .constellation-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            margin-bottom: auto;
+            position: relative;
+        }
+
+        /* SVG lines connecting badges */
+        .constellation-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star-badge {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .star-badge:hover {
+            transform: scale(1.2);
+        }
+
+        .star-node {
+            width: 8px; height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--starlight-gold);
+            position: relative;
+            z-index: 2;
+            transition: background 0.3s;
+        }
+        
+        .star-badge:hover .star-node {
+            background: var(--starlight-gold);
+            box-shadow: 0 0 15px var(--starlight-gold), 0 0 30px var(--starlight-gold);
+        }
+
+        .star-icon {
+            position: absolute;
+            top: -25px; /* Moved up slightly */
+            opacity: 0.6; /* Visible by default now */
+            transition: opacity 0.3s, top 0.3s;
+            pointer-events: none;
+            color: var(--starlight-gold);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8); /* Shadow for readability */
+        }
+        
+        .star-badge:hover .star-icon {
+            opacity: 1;
+            top: -32px;
+            text-shadow: 0 0 15px var(--starlight-gold);
+        }
+        
+        .star-label {
+            position: absolute;
+            bottom: -18px;
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            width: 100%;
+            text-align: center;
+            transition: color 0.3s;
+        }
+        .star-badge:hover .star-label { color: #fff; }
+
+        /* --- Footer --- */
+        .footer-coords {
+            border-top: 1px solid rgba(191, 149, 63, 0.2);
+            width: 100%;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.4);
+        }
+        
+        .coord-val { color: var(--starlight-gold); font-weight: 700; margin-left: 5px; }
+
+        /* --- Effects --- */
+        @keyframes float-nebula { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(20px, 20px) rotate(5deg); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        .dust-particle {
+            position: absolute;
+            background: var(--starlight-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fade-out 1s linear forwards;
+        }
+        @keyframes fade-out { to { opacity: 0; transform: scale(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="nebula-cloud nc-1"></div>
+    <div class="nebula-cloud nc-2"></div>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <canvas id="starCanvas"></canvas>
+                <div class="gold-rim"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <h1 class="brand-logo">ZENITH</h1>
+                    <div class="brand-sub">Celestial Vanguard</div>
+                </div>
+
+                <!-- 3D Dyson Ring Canvas -->
+                <div class="orbital-stage">
+                    <canvas id="dysonCanvas"></canvas>
+                </div>
+
+                <div class="identity-container">
+                    <h2 class="name-plate">Alex Chen</h2>
+                    <span class="title-plate">Cosmic Architect // Grade: Alpha</span>
+                </div>
+
+                <!-- Constellation Network -->
+                <div class="constellation-grid">
+                    <!-- SVG Overlay for lines - Coordinates adjusted to hit row centers (approx 25% and 75% height of grid) -->
+                    <svg class="constellation-lines" width="100%" height="100%">
+                        <!-- Row 1 Connections -->
+                        <line x1="12.5%" y1="25%" x2="37.5%" y2="25%" stroke="rgba(255,255,255,0.2)" />
+                        <line x1="37.5%" y1="25%" x2="62.5%" y2="25%" stroke="rgba(255,255,255,0.2)" />
+                        <line x1="62.5%" y1="25%" x2="87.5%" y2="25%" stroke="rgba(255,255,255,0.2)" />
+                        
+                        <!-- Row 2 Connections -->
+                        <line x1="12.5%" y1="75%" x2="37.5%" y2="75%" stroke="rgba(255,255,255,0.2)" />
+                        <line x1="37.5%" y1="75%" x2="62.5%" y2="75%" stroke="rgba(255,255,255,0.2)" />
+                        <line x1="62.5%" y1="75%" x2="87.5%" y2="75%" stroke="rgba(255,255,255,0.2)" />
+                        
+                        <!-- Vertical Connections -->
+                        <line x1="37.5%" y1="25%" x2="37.5%" y2="75%" stroke="rgba(255,255,255,0.15)" stroke-dasharray="2 2" />
+                        <line x1="62.5%" y1="25%" x2="62.5%" y2="75%" stroke="rgba(255,255,255,0.15)" stroke-dasharray="2 2" />
+                    </svg>
+
+                    <!-- Row 1 -->
+                    <div class="star-badge" title="Neural Networks">
+                        <div class="star-icon">🧠</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Neural</span>
+                    </div>
+                    <div class="star-badge" title="AI Ethics">
+                        <div class="star-icon">⚖️</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Ethics</span>
+                    </div>
+                    <div class="star-badge" title="Quantum Computing">
+                        <div class="star-icon">⚛️</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Quantum</span>
+                    </div>
+                    <div class="star-badge" title="Cyber Security">
+                        <div class="star-icon">🛡️</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Sec</span>
+                    </div>
+                    
+                    <!-- Row 2 -->
+                    <div class="star-badge" title="Data Uplink">
+                        <div class="star-icon">📡</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Link</span>
+                    </div>
+                    <div class="star-badge" title="Computer Vision">
+                        <div class="star-icon">👁️</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Vision</span>
+                    </div>
+                    <div class="star-badge" title="Targeting Systems">
+                        <div class="star-icon">🎯</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Target</span>
+                    </div>
+                    <div class="star-badge" title="Defense Mechanisms">
+                        <div class="star-icon">🏰</div>
+                        <div class="star-node"></div>
+                        <span class="star-label">Def</span>
+                    </div>
+                </div>
+
+                <div class="footer-coords">
+                    <div>SEC: <span class="coord-val">04</span></div>
+                    <div>VEC: <span class="coord-val">99.2</span></div>
+                    <div>POS: <span class="coord-val">ZEN-X</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const chassis = document.querySelector('.chassis');
+
+        // 1. Parallax Tilt & Star Parallax
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Move background stars slightly for depth
+            const starCanvas = document.getElementById('starCanvas');
+            starCanvas.style.transform = `translate(${x * -20}px, ${y * -20}px) scale(1.1)`;
+            
+            // Gold Dust Trail
+            if(Math.random() > 0.8) createDust(e.clientX, e.clientY);
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 2. Gold Dust Particle Function
+        function createDust(x, y) {
+            const dust = document.createElement('div');
+            dust.classList.add('dust-particle');
+            document.body.appendChild(dust);
+            
+            const size = Math.random() * 3 + 1;
+            dust.style.width = `${size}px`;
+            dust.style.height = `${size}px`;
+            dust.style.left = `${x}px`;
+            dust.style.top = `${y}px`;
+            
+            setTimeout(() => dust.remove(), 1000);
+        }
+
+        // 3. Starfield Background (Canvas 1)
+        const starCanvas = document.getElementById('starCanvas');
+        const sCtx = starCanvas.getContext('2d');
+        
+        const stars = [];
+        
+        function initStars() {
+            const dpr = window.devicePixelRatio || 1;
+            const sRect = chassis.getBoundingClientRect(); 
+            // Fallback if rect is 0 (can happen if hidden or loading)
+            const width = sRect.width || 420;
+            const height = sRect.height || 680;
+            
+            starCanvas.width = width * dpr;
+            starCanvas.height = height * dpr;
+            sCtx.scale(dpr, dpr);
+            
+            stars.length = 0; // Clear existing
+            for(let i=0; i<100; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 1.5,
+                    alpha: Math.random(),
+                    fadeDir: Math.random() > 0.5 ? 0.01 : -0.01
+                });
+            }
+        }
+
+        function animateStars() {
+            // Need rect for clearing
+            const sRect = chassis.getBoundingClientRect();
+            const width = sRect.width || 420;
+            const height = sRect.height || 680;
+
+            sCtx.clearRect(0, 0, width, height);
+            
+            stars.forEach(s => {
+                s.alpha += s.fadeDir;
+                if(s.alpha > 1 || s.alpha < 0.2) s.fadeDir *= -1;
+                
+                sCtx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+                sCtx.beginPath();
+                sCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                sCtx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        // 4. Dyson Ring System (Canvas 2)
+        const dysonCanvas = document.getElementById('dysonCanvas');
+        const dCtx = dysonCanvas.getContext('2d');
+        let dTime = 0;
+        let dCx, dCy;
+
+        function initDyson() {
+            const dpr = window.devicePixelRatio || 1;
+            const dRect = dysonCanvas.getBoundingClientRect();
+            // Fallback dimensions
+            const width = dRect.width || 200;
+            const height = dRect.height || 200;
+            
+            dysonCanvas.width = width * dpr;
+            dysonCanvas.height = height * dpr;
+            dCtx.scale(dpr, dpr);
+            
+            dCx = width / 2;
+            dCy = height / 2;
+        }
+
+        function drawDyson() {
+            // Recalculate dimensions in loop or rely on init? 
+            // Better to rely on init variables but ensure they are set
+            if (!dCx) initDyson(); 
+            
+            // We need width/height for clearRect. Get from canvas attribute / dpr
+            const width = dysonCanvas.width / (window.devicePixelRatio || 1);
+            const height = dysonCanvas.height / (window.devicePixelRatio || 1);
+
+            dCtx.clearRect(0, 0, width, height);
+            dTime += 0.01;
+            
+            // Central Star
+            const starGrad = dCtx.createRadialGradient(dCx, dCy, 0, dCx, dCy, 15);
+            starGrad.addColorStop(0, '#fff');
+            starGrad.addColorStop(0.5, '#ffd700');
+            starGrad.addColorStop(1, 'transparent');
+            dCtx.fillStyle = starGrad;
+            dCtx.beginPath();
+            dCtx.arc(dCx, dCy, 15, 0, Math.PI * 2);
+            dCtx.fill();
+            
+            // Rotating Rings
+            dCtx.lineWidth = 1;
+            
+            for(let i=0; i<3; i++) {
+                const radius = 30 + (i * 20);
+                const tilt = 0.5;
+                const rot = dTime * (1 - i*0.2);
+                
+                dCtx.strokeStyle = i === 1 ? 'rgba(191, 149, 63, 0.6)' : 'rgba(255,255,255,0.3)';
+                
+                dCtx.beginPath();
+                for(let a=0; a<=Math.PI*2; a+=0.1) {
+                    // 3D Ring Rotation Math
+                    const x = dCx + radius * Math.cos(a + rot);
+                    const y = dCy + radius * Math.sin(a + rot) * tilt; // flatten Y
+                    
+                    // Optional Z-axis tilt simulation
+                    const yRot = y * Math.cos(i) - x * Math.sin(i); 
+                    
+                    if(a===0) dCtx.moveTo(x, y);
+                    else dCtx.lineTo(x, y);
+                }
+                dCtx.closePath();
+                dCtx.stroke();
+                
+                // Add a "planet" on the ring
+                const px = dCx + radius * Math.cos(rot);
+                const py = dCy + radius * Math.sin(rot) * tilt;
+                dCtx.fillStyle = '#fff';
+                dCtx.beginPath();
+                dCtx.arc(px, py, 2, 0, Math.PI*2);
+                dCtx.fill();
+            }
+            
+            requestAnimationFrame(drawDyson);
+        }
+
+        // Initialize and Start
+        window.addEventListener('load', () => {
+            initStars();
+            initDyson();
+            animateStars();
+            drawDyson();
+        });
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            initStars();
+            initDyson();
+        });
+
+    })();
+    </script>
+</body>
+</html>
