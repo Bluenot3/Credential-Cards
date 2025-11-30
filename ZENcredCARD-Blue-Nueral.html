@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Quantum-Neural</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 660px;
+            
+            /* Quantum-Neural Palette */
+            --deep-space: #020c1b;
+            --quantum-cyan: #00f7ff;
+            --neural-purple: #7000ff;
+            --hologram-white: #e6f1ff;
+            --circuit-blue: #0a192f;
+            
+            --neon-gradient: linear-gradient(135deg, var(--quantum-cyan), var(--neural-purple));
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--deep-space);
+            /* Circuit Board Background */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.1) 0%, transparent 60%),
+                linear-gradient(rgba(0, 247, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 247, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Neural Interface) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(160deg, var(--circuit-blue), #020c1b);
+            
+            /* Neon Rim Lighting */
+            box-shadow: 
+                0 0 0 1px rgba(0, 247, 255, 0.3),
+                0 20px 50px -10px rgba(112, 0, 255, 0.4),
+                inset 0 0 60px rgba(0, 247, 255, 0.1);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Data Flow Canvas */
+        canvas#flowCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Holographic Sheen */
+        .holo-sheen {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(0, 247, 255, 0.1) 25%, 
+                rgba(112, 0, 255, 0.1) 50%, 
+                rgba(0, 247, 255, 0.1) 75%, 
+                transparent 100%
+            );
+            filter: blur(40px);
+            animation: rotate-sheen 10s linear infinite;
+            pointer-events: none;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--hologram-white);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--neon-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .brand-sub {
+            font-size: 0.7rem;
+            color: var(--quantum-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        .system-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            color: var(--deep-space);
+            background: var(--neon-gradient);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(112, 0, 255, 0.3);
+        }
+
+        /* --- Central Vis (Quantum Core) --- */
+        .core-stage {
+            position: relative;
+            height: 160px;
+            margin-bottom: 25px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+        }
+        
+        /* Glowing Ring */
+        .core-stage::before {
+            content: ''; position: absolute; inset: 10px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: var(--neon-gradient) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: spin-slow 8s linear infinite;
+            opacity: 0.6;
+        }
+
+        canvas#coreCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 15px var(--quantum-cyan)) drop-shadow(0 0 15px var(--neural-purple));
+        }
+        
+        .core-label {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* --- Identity --- */
+        .id-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, rgba(0, 247, 255, 0.1), rgba(112, 0, 255, 0.1));
+            padding: 12px;
+            border-radius: 16px;
+            border-left: 3px solid var(--quantum-cyan);
+        }
+
+        .avatar-circle {
+            width: 65px; height: 65px;
+            border-radius: 50%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            position: relative;
+            /* Dual glow */
+            box-shadow: -3px 0 15px var(--quantum-cyan), 3px 0 15px var(--neural-purple);
+        }
+        
+        /* Holographic Ring */
+        .avatar-circle::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 1px dashed var(--quantum-cyan);
+            animation: spin-slow 10s linear infinite;
+            opacity: 0.7;
+        }
+
+        .name-main {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+            text-shadow: 0 0 10px var(--neural-purple);
+        }
+        
+        .role-sub {
+            font-size: 0.75rem;
+            background: var(--neon-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* --- Status Bars --- */
+        .status-section {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .status-bar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .bar-bg {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            animation: pulse-bar 3s infinite alternate;
+        }
+        .fill-cyan { width: 92%; background: var(--quantum-cyan); box-shadow: 0 0 10px var(--quantum-cyan); }
+        .fill-purple { width: 78%; background: var(--neural-purple); box-shadow: 0 0 10px var(--neural-purple); }
+
+        /* --- Module Grid (Badges) --- */
+        .grid-title {
+            font-size: 0.65rem;
+            color: var(--quantum-cyan);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-line { flex: 1; height: 1px; background: var(--neon-gradient); opacity: 0.4; }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: auto;
+        }
+
+        .neural-module {
+            aspect-ratio: 1;
+            background: rgba(10, 25, 47, 0.6);
+            border: 1px solid rgba(0, 247, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .neural-module:hover {
+            border-color: var(--quantum-cyan);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.3), inset 0 0 10px rgba(0, 247, 255, 0.1);
+        }
+        
+        /* Holographic overlay on hover */
+        .neural-module::before {
+            content: ''; position: absolute; inset: 0;
+            background: var(--neon-gradient);
+            opacity: 0; transition: opacity 0.2s; z-index: -1;
+        }
+        .neural-module:hover::before { opacity: 0.15; }
+
+        .module-icon { width: 22px; height: 22px; fill: rgba(255,255,255,0.8); margin-bottom: 5px; transition: fill 0.2s; }
+        .neural-module:hover .module-icon { fill: #fff; filter: drop-shadow(0 0 8px #fff); }
+        
+        .module-lbl { font-size: 0.5rem; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            color: var(--hologram-white);
+        }
+        
+        .footer-stat { display: flex; align-items: center; gap: 5px; }
+        .footer-icon { width: 12px; height: 12px; fill: var(--quantum-cyan); }
+        .footer-stat:last-child .footer-icon { fill: var(--neural-purple); }
+        .footer-stat span { font-weight: 700; }
+
+        /* --- Animations --- */
+        @keyframes rotate-sheen { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse-bar { 0% { opacity: 0.8; } 100% { opacity: 1; box-shadow: 0 0 15px currentColor; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <canvas id="flowCanvas"></canvas>
+                <div class="holo-sheen"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div>
+                        <div class="brand-logo">NEURA // LINK</div>
+                        <div class="brand-sub">Quantum Interface</div>
+                    </div>
+                    <div class="system-tag">SYSTEM ONLINE</div>
+                </div>
+
+                <!-- 3D Core Visual -->
+                <div class="core-stage">
+                    <canvas id="coreCanvas"></canvas>
+                    <div class="core-label">QUANTUM QUBIT</div>
+                </div>
+
+                <div class="id-card">
+                    <div class="avatar-circle">🧠</div>
+                    <div>
+                        <div class="name-main">Alex Chen</div>
+                        <div class="role-sub">Neural Architect // Lv. 100</div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <div class="status-bar-group">
+                        <div class="status-header">
+                            <span>Neural Sync</span>
+                            <span style="color:var(--quantum-cyan)">99.9%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill fill-cyan"></div>
+                        </div>
+                    </div>
+                    <div class="status-bar-group">
+                        <div class="status-header">
+                            <span>System Load</span>
+                            <span style="color:var(--neural-purple)">78%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill fill-purple"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-title">
+                    <span>Cognitive Modules</span>
+                    <div class="grid-line"></div>
+                </div>
+
+                <div class="module-grid">
+                    <div class="neural-module" title="Logic Processing">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                        <span class="module-lbl">Logic</span>
+                    </div>
+                    <div class="neural-module" title="Memory Banks">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="module-lbl">Memory</span>
+                    </div>
+                    <div class="neural-module" title="Pattern Recognition">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="module-lbl">Pattern</span>
+                    </div>
+                    <div class="neural-module" title="Decision Making">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                        <span class="module-lbl">Decision</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="neural-module" title="Data Analysis">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+                        <span class="module-lbl">Analysis</span>
+                    </div>
+                    <div class="neural-module" title="Learning Algorithms">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.41 9L12 13.68 20.59 9 12 4.32 3.41 9zM12 15.32L3.41 10.64V13l8.59 4.68L20.59 13v-2.36L12 15.32z"/></svg>
+                        <span class="module-lbl">Learn</span>
+                    </div>
+                    <div class="neural-module" title="Communication">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+                        <span class="module-lbl">Comm</span>
+                    </div>
+                    <div class="neural-module" title="Security Protocols">
+                        <svg class="module-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span class="module-lbl">Secure</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="footer-stat">
+                        <svg class="footer-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.23 15.39L12 15.45l-3.22 1.94.84-3.68-2.83-2.5 3.75-.33L12 7.5l1.46 3.38 3.75.33-2.83 2.5.84 3.68z"/></svg>
+                        UPTIME: <span style="color:var(--quantum-cyan)">99.99%</span>
+                    </div>
+                    <div class="footer-stat">
+                        <svg class="footer-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 12h-2v-2h2v2zm0-4h-2V7h2v3z"/></svg>
+                        LATENCY: <span style="color:var(--neural-purple)">1.2ms</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 2. Data Flow Particles (Canvas)
+        const flowCanvas = document.getElementById('flowCanvas');
+        const fCtx = flowCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const fRect = flowCanvas.getBoundingClientRect();
+        
+        flowCanvas.width = fRect.width * dpr;
+        flowCanvas.height = fRect.height * dpr;
+        fCtx.scale(dpr, dpr);
+        
+        const particles = [];
+        for(let i=0; i<60; i++) {
+            particles.push({
+                x: Math.random() * fRect.width,
+                y: Math.random() * fRect.height,
+                size: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 1.5,
+                speedY: (Math.random() - 0.5) * 1.5,
+                color: Math.random() > 0.5 ? '#00f7ff' : '#7000ff',
+                alpha: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function drawFlow() {
+            fCtx.clearRect(0, 0, fRect.width, fRect.height);
+            
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                
+                // Wrap around screen
+                if(p.x < 0) p.x = fRect.width;
+                if(p.x > fRect.width) p.x = 0;
+                if(p.y < 0) p.y = fRect.height;
+                if(p.y > fRect.height) p.y = 0;
+                
+                fCtx.fillStyle = p.color;
+                fCtx.globalAlpha = p.alpha;
+                fCtx.beginPath();
+                fCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                fCtx.fill();
+            });
+            
+            // Draw connecting lines for a neural network effect
+            fCtx.strokeStyle = 'rgba(0, 247, 255, 0.1)';
+            fCtx.lineWidth = 0.5;
+            fCtx.beginPath();
+            for(let i=0; i<particles.length; i++) {
+                for(let j=i+1; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 60) {
+                        fCtx.moveTo(particles[i].x, particles[i].y);
+                        fCtx.lineTo(particles[j].x, particles[j].y);
+                    }
+                }
+            }
+            fCtx.stroke();
+
+            requestAnimationFrame(drawFlow);
+        }
+        drawFlow();
+
+        // 3. Quantum Core (Middle Canvas)
+        const coreCanvas = document.getElementById('coreCanvas');
+        const cCtx = coreCanvas.getContext('2d');
+        const cRect = coreCanvas.getBoundingClientRect();
+        coreCanvas.width = cRect.width * dpr;
+        coreCanvas.height = cRect.height * dpr;
+        cCtx.scale(dpr, dpr);
+        
+        const cx = cRect.width / 2;
+        const cy = cRect.height / 2;
+        let time = 0;
+
+        function drawCore() {
+            cCtx.clearRect(0, 0, cRect.width, cRect.height);
+            time += 0.03;
+            
+            // Central Quantum Sphere
+            const grad = cCtx.createRadialGradient(cx, cy, 0, cx, cy, 40);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+            grad.addColorStop(0.4, 'rgba(0, 247, 255, 0.6)');
+            grad.addColorStop(0.8, 'rgba(112, 0, 255, 0.4)');
+            grad.addColorStop(1, 'transparent');
+            cCtx.fillStyle = grad;
+            cCtx.beginPath();
+            cCtx.arc(cx, cy, 40, 0, Math.PI*2);
+            cCtx.fill();
+
+            // Rotating Orbital Rings
+            for(let i=0; i<3; i++) {
+                cCtx.beginPath();
+                const rx = 50 + i*10;
+                const ry = 20 + i*5;
+                const rot = time * (i%2===0 ? 1 : -1) + (i*Math.PI/3);
+                
+                for(let a=0; a<=Math.PI*2; a+=0.1) {
+                    const x = cx + rx * Math.cos(a) * Math.cos(rot) - ry * Math.sin(a) * Math.sin(rot);
+                    const y = cy + rx * Math.cos(a) * Math.sin(rot) + ry * Math.sin(a) * Math.cos(rot);
+                    if(a===0) cCtx.moveTo(x,y); else cCtx.lineTo(x,y);
+                }
+                cCtx.strokeStyle = i%2===0 ? 'rgba(0, 247, 255, 0.5)' : 'rgba(112, 0, 255, 0.5)';
+                cCtx.lineWidth = 1.5;
+                cCtx.stroke();
+            }
+
+            // Pulsing Core
+            const pulseScale = 1 + Math.sin(time * 2) * 0.1;
+            cCtx.beginPath();
+            cCtx.arc(cx, cy, 15 * pulseScale, 0, Math.PI*2);
+            cCtx.fillStyle = '#fff';
+            cCtx.globalAlpha = 0.8;
+            cCtx.fill();
+            cCtx.globalAlpha = 1;
+
+            requestAnimationFrame(drawCore);
+        }
+        drawCore();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            // Re-init canvas dims
+        });
+
+    })();
+    </script>
+</body>
+</html>
