@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Zero-Point</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Michroma&family=Rajdhani:wght@300;500;600;700&family=Sono:wght@200;400;600&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 680px;
+            
+            /* Zero-Point Palette */
+            --void-blue: #020408;
+            --deep-navy: #050a14;
+            
+            --energy-cyan: #00f2ff;
+            --energy-violet: #7000ff;
+            --energy-white: #ffffff;
+            
+            --glass-frost: rgba(20, 30, 50, 0.6);
+            --border-plasma: rgba(0, 242, 255, 0.4);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void-blue);
+            /* Quantum Field Background */
+            background-image: 
+                radial-gradient(circle at 50% 0%, #0d1b33 0%, #000 100%),
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(112, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Crystalline Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            /* Diamond Cut Shape */
+            clip-path: polygon(
+                30px 0, 100% 0, 100% calc(100% - 30px), 
+                calc(100% - 30px) 100%, 0 100%, 0 30px
+            );
+            background: linear-gradient(170deg, rgba(10, 20, 40, 0.95), #000);
+            
+            /* Cold Glow */
+            box-shadow: 
+                0 0 0 1px rgba(0, 242, 255, 0.15),
+                0 40px 100px -20px rgba(0, 242, 255, 0.1),
+                inset 0 0 80px rgba(0, 0, 0, 0.9);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Prismatic Edges (Pseudo-element) */
+        .chassis::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.05) 45%, rgba(0, 242, 255, 0.1) 50%, transparent 60%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Internal Grid Texture */
+        .grid-mesh {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 50% 50%, transparent 0%, #000 120%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 10px);
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 2. Holographic Interface Layer */
+        .interface-layer {
+            position: absolute;
+            inset: 6px;
+            border: 1px solid var(--border-plasma);
+            /* Matching Clip */
+            clip-path: polygon(
+                26px 0, 100% 0, 100% calc(100% - 26px), 
+                calc(100% - 26px) 100%, 0 100%, 0 26px
+            );
+            background: rgba(5, 10, 15, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* Holographic Sheen */
+        .holo-foil {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(0, 242, 255, 0.15) 25%, 
+                rgba(112, 0, 255, 0.15) 50%, 
+                rgba(0, 242, 255, 0.15) 75%, 
+                transparent 100%
+            );
+            mix-blend-mode: color-dodge;
+            filter: blur(35px);
+            animation: rotate-sheen 15s linear infinite;
+            pointer-events: none;
+        }
+
+        /* 3. Content Deck */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            z-index: 10;
+            color: var(--energy-white);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+            padding-bottom: 12px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 40px; height: 2px;
+            background: var(--energy-cyan);
+            box-shadow: 0 0 10px var(--energy-cyan);
+        }
+
+        .brand-block h1 {
+            font-family: 'Michroma', sans-serif;
+            font-size: 1.4rem;
+            margin: 0;
+            line-height: 1;
+            background: linear-gradient(90deg, #fff, var(--energy-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(0,242,255,0.5));
+        }
+        
+        .brand-block span {
+            font-size: 0.6rem;
+            color: var(--energy-violet);
+            letter-spacing: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .status-chip {
+            font-family: 'Sono', sans-serif;
+            font-size: 0.55rem;
+            color: var(--energy-cyan);
+            border: 1px solid var(--energy-cyan);
+            padding: 3px 8px;
+            border-radius: 2px;
+            background: rgba(0, 242, 255, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Quantum Core (Canvas) --- */
+        .core-viewport {
+            position: relative;
+            height: 160px;
+            margin-bottom: 25px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px #000;
+        }
+        
+        .hud-crosshair {
+            position: absolute;
+            inset: 20px;
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hud-crosshair::before {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 4px; height: 4px; background: #fff; border-radius: 50%;
+        }
+
+        canvas#quantCanvas {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 8px var(--energy-cyan)); 
+        }
+
+        /* --- Identity --- */
+        .id-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, rgba(112, 0, 255, 0.1), transparent);
+            padding: 10px;
+            border-left: 2px solid var(--energy-violet);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .avatar-poly {
+            width: 60px; height: 60px;
+            background: #000;
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            /* Pseudo-border workaround for clip-path */
+        }
+        .avatar-poly::before {
+            content: ''; position: absolute; inset: 0; background: var(--energy-cyan); z-index: -1;
+        }
+        .avatar-poly::after {
+            content: ''; position: absolute; inset: 2px; background: #050a14; 
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            z-index: 0;
+        }
+        
+        .avatar-txt { z-index: 2; font-weight: 700; font-size: 1.4rem; color: #fff; font-family: 'Michroma'; }
+
+        .user-meta h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+            margin: 0;
+        }
+        
+        .user-meta span {
+            font-size: 0.7rem;
+            color: var(--energy-cyan);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* --- Energy Metrics --- */
+        .energy-bar-container {
+            margin-bottom: 25px;
+        }
+        
+        .energy-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+            font-family: 'Sono';
+        }
+        
+        .energy-track {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .energy-pulse {
+            height: 100%;
+            width: 94%;
+            background: linear-gradient(90deg, var(--energy-violet), var(--energy-cyan));
+            box-shadow: 0 0 12px var(--energy-cyan);
+            animation: pulse-width 3s infinite alternate;
+        }
+
+        /* --- Grid (Badges) --- */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            color: var(--energy-cyan);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 4px;
+        }
+
+        .lattice-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .lattice-node {
+            aspect-ratio: 1;
+            background: rgba(10, 20, 40, 0.6);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lattice-node:hover {
+            border-color: var(--energy-violet);
+            background: rgba(112, 0, 255, 0.15);
+            transform: scale(1.05) translateZ(10px);
+            box-shadow: 0 0 15px rgba(112, 0, 255, 0.3);
+        }
+
+        .node-icon { width: 20px; height: 20px; fill: rgba(255,255,255,0.7); margin-bottom: 4px; transition: fill 0.2s; }
+        .lattice-node:hover .node-icon { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+        
+        .node-lbl { font-size: 0.5rem; color: rgba(255,255,255,0.5); text-transform: uppercase; font-family: 'Share Tech Mono'; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Sono', monospace;
+            font-size: 0.6rem;
+            color: var(--energy-cyan);
+        }
+        
+        .val { color: #fff; font-weight: 700; margin-left: 5px; }
+
+        /* --- Tech Details --- */
+        .tech-line {
+            position: absolute;
+            background: rgba(255,255,255,0.2);
+            z-index: 20;
+        }
+        .tl-1 { top: 20px; right: -5px; width: 10px; height: 2px; }
+        .tl-2 { top: 25px; right: -5px; width: 20px; height: 2px; }
+        .tl-3 { bottom: 20px; left: -5px; width: 10px; height: 2px; }
+        .tl-4 { bottom: 25px; left: -5px; width: 20px; height: 2px; }
+
+        /* --- Animations --- */
+        @keyframes rotate-sheen { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse-width { 0% { width: 90%; opacity: 0.8; } 100% { width: 96%; opacity: 1; box-shadow: 0 0 20px var(--energy-cyan); } }
+
+        /* Glare */
+        .crystal-glare {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(0, 242, 255, 0.2) 50%, rgba(255,255,255,0.1) 55%, transparent 60%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            z-index: 30;
+            transition: transform 0.1s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="grid-mesh"></div>
+            </div>
+            
+            <!-- Tech Details -->
+            <div class="tech-line tl-1"></div>
+            <div class="tech-line tl-2"></div>
+            <div class="tech-line tl-3"></div>
+            <div class="tech-line tl-4"></div>
+
+            <!-- Glass Layer -->
+            <div class="interface-layer">
+                <div class="holo-foil"></div>
+                <div class="crystal-glare" id="glare"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-block">
+                        <h1>ZEN.ZERO</h1>
+                        <span>Quantum Field</span>
+                    </div>
+                    <div class="status-chip">STATUS: STABLE</div>
+                </div>
+
+                <!-- 3D Core Visual -->
+                <div class="core-viewport">
+                    <div class="hud-crosshair"></div>
+                    <canvas id="quantCanvas"></canvas>
+                </div>
+
+                <div class="id-section">
+                    <div class="avatar-poly">
+                        <div class="avatar-txt">AC</div>
+                    </div>
+                    <div class="user-meta">
+                        <h2>Alex Chen</h2>
+                        <span>Zero-Point Engineer</span>
+                    </div>
+                </div>
+
+                <div class="energy-bar-container">
+                    <div class="energy-labels">
+                        <span>FIELD INTEGRITY</span>
+                        <span style="color:var(--energy-cyan)">94%</span>
+                    </div>
+                    <div class="energy-track">
+                        <div class="energy-pulse"></div>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <span>Power Distribution</span>
+                    <span>ONLINE</span>
+                </div>
+
+                <div class="lattice-grid">
+                    <div class="lattice-node" title="Neural Net">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="node-lbl">Neural</span>
+                    </div>
+                    <div class="lattice-node" title="Quantum Logic">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span class="node-lbl">Logic</span>
+                    </div>
+                    <div class="lattice-node" title="Data Uplink">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="node-lbl">Link</span>
+                    </div>
+                    <div class="lattice-node" title="Encryption">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                        <span class="node-lbl">Crypt</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="lattice-node" title="Vision">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="node-lbl">Vis</span>
+                    </div>
+                    <div class="lattice-node" title="Energy">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg>
+                        <span class="node-lbl">Power</span>
+                    </div>
+                    <div class="lattice-node" title="Targeting">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="node-lbl">Aim</span>
+                    </div>
+                    <div class="lattice-node" title="Containment">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="node-lbl">Field</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>CYCLE: <span class="val">3.4GHz</span></div>
+                    <div>FLUX: <span class="val">STABLE</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const glare = document.getElementById('glare');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Crystal Glare Movement
+            const glarePos = -100 + (x * 100);
+            glare.style.transform = `translateX(${glarePos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+        });
+
+        // 2. Quantum Lattice (Canvas)
+        const canvas = document.getElementById('quantCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        let time = 0;
+
+        function drawLattice() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            time += 0.02;
+            
+            const size = 35;
+            // 3D Cube Rotation
+            const vertices = [
+                {x:-1, y:-1, z:-1}, {x:1, y:-1, z:-1}, {x:1, y:1, z:-1}, {x:-1, y:1, z:-1},
+                {x:-1, y:-1, z:1}, {x:1, y:-1, z:1}, {x:1, y:1, z:1}, {x:-1, y:1, z:1}
+            ];
+            
+            const edges = [
+                [0,1], [1,2], [2,3], [3,0], // back face
+                [4,5], [5,6], [6,7], [7,4], // front face
+                [0,4], [1,5], [2,6], [3,7]  // connecting
+            ];
+            
+            // Rotate
+            const angle = time;
+            const pts = vertices.map(v => {
+                // Rot X
+                let y = v.y * Math.cos(angle) - v.z * Math.sin(angle);
+                let z = v.y * Math.sin(angle) + v.z * Math.cos(angle);
+                // Rot Y
+                let x = v.x * Math.cos(angle) - z * Math.sin(angle);
+                z = v.x * Math.sin(angle) + z * Math.cos(angle);
+                
+                return {x, y, z};
+            });
+            
+            // Draw Edges
+            ctx.strokeStyle = '#00f2ff';
+            ctx.lineWidth = 1.5;
+            
+            edges.forEach(e => {
+                const p1 = pts[e[0]];
+                const p2 = pts[e[1]];
+                
+                // Project
+                const scale1 = 200 / (200 + p1.z * size);
+                const scale2 = 200 / (200 + p2.z * size);
+                
+                const x1 = cx + p1.x * size * scale1;
+                const y1 = cy + p1.y * size * scale1;
+                const x2 = cx + p2.x * size * scale2;
+                const y2 = cy + p2.y * size * scale2;
+                
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.globalAlpha = 0.6 + (p1.z * 0.2); // Depth fade
+                ctx.stroke();
+            });
+            
+            // Draw Nodes
+            ctx.globalAlpha = 1;
+            pts.forEach(p => {
+                const scale = 200 / (200 + p.z * size);
+                const x = cx + p.x * size * scale;
+                const y = cy + p.y * size * scale;
+                
+                ctx.fillStyle = '#7000ff';
+                ctx.beginPath();
+                ctx.arc(x, y, 3 * scale, 0, Math.PI*2);
+                ctx.fill();
+            });
+            
+            // Central Energy
+            ctx.beginPath();
+            ctx.arc(cx, cy, 10 + Math.sin(time*2)*5, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00f2ff';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(drawLattice);
+        }
+        drawLattice();
+
+        window.addEventListener('resize', () => {
+            // Resize placeholder
+        });
+
+    })();
+    </script>
+</body>
+</html>
