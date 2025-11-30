@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - White Carbon</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --card-w: 420px;
+            --card-h: 660px;
+            
+            /* White Carbon Palette */
+            --bg-world: #e0e5ec;
+            --carbon-base: #f8fafc;
+            --carbon-weave: #e2e8f0;
+            --glass-shine: rgba(255, 255, 255, 0.9);
+            
+            --accent-cyan: #06b6d4;
+            --accent-silver: #94a3b8;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-world);
+            /* Soft studio lighting background */
+            background-image: 
+                radial-gradient(circle at 0% 0%, #ffffff 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, #cbd5e1 0%, transparent 60%);
+            font-family: 'Outfit', sans-serif;
+            perspective: 2500px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. White Carbon Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            background-color: var(--carbon-base);
+            
+            /* CSS Procedural Carbon Fiber Weave */
+            background-image: 
+                linear-gradient(45deg, var(--carbon-weave) 25%, transparent 25%, transparent 75%, var(--carbon-weave) 75%, var(--carbon-weave)),
+                linear-gradient(45deg, var(--carbon-weave) 25%, transparent 25%, transparent 75%, var(--carbon-weave) 75%, var(--carbon-weave));
+            background-position: 0 0, 4px 4px;
+            background-size: 8px 8px;
+            
+            /* Physical properties */
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.8) inset, /* Inner highlight */
+                0 30px 60px -15px rgba(148, 163, 184, 0.6), /* Deep shadow */
+                0 0 40px rgba(255,255,255,0.8); /* Glow */
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,1);
+        }
+
+        /* Glossy Top Coat */
+        .gloss-coat {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        /* 2. Ceramic Frame */
+        .ceramic-frame {
+            position: absolute;
+            inset: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 26px;
+            box-shadow: 
+                0 2px 10px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(255,255,255,1);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Corner Screws (Milled Aluminum) */
+        .screw {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: radial-gradient(circle, #f1f5f9 30%, #94a3b8 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,1), 0 1px 2px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .screw::after { content: ''; width: 6px; height: 1px; background: #64748b; transform: rotate(45deg); opacity: 0.5; }
+        .s-tl { top: 18px; left: 18px; }
+        .s-tr { top: 18px; right: 18px; }
+        .s-bl { bottom: 18px; left: 18px; }
+        .s-br { bottom: 18px; right: 18px; }
+
+        /* 3. Content Layout */
+        .content-layer {
+            position: absolute;
+            inset: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            z-index: 10;
+            color: var(--text-dark);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-lockup {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -1px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+        
+        .brand-sub {
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .edition-badge {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-light);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            backdrop-filter: blur(4px);
+        }
+
+        /* --- Tesseract Canvas --- */
+        .canvas-container {
+            position: relative;
+            height: 180px;
+            margin-bottom: 25px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0));
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+        }
+        
+        canvas#tesseractCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- ID Section --- */
+        .id-strip {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.4);
+            padding: 15px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .avatar-ring {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #e2e8f0, #fff, #e2e8f0);
+            padding: 3px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .avatar-img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .user-info h2 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+        
+        .user-info p {
+            margin: 4px 0 0 0;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Prism Tiles (Badges) --- */
+        .grid-header {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .prism-tile {
+            aspect-ratio: 1;
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(241,245,249,0.8));
+            border-radius: 14px;
+            border: 1px solid #fff;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.03),
+                inset 0 2px 4px rgba(255,255,255,1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .prism-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 10px 20px -5px rgba(6, 182, 212, 0.15),
+                0 0 0 2px var(--accent-cyan) inset;
+        }
+
+        .prism-tile svg {
+            width: 22px; height: 22px;
+            fill: var(--text-dark);
+            transition: fill 0.2s;
+        }
+        
+        .prism-tile:hover svg { fill: var(--accent-cyan); }
+
+        /* --- Footer --- */
+        .footer {
+            border-top: 2px solid rgba(255,255,255,0.5);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .stat-label {
+            font-size: 0.6rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .verified-check {
+            width: 24px; height: 24px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+        }
+
+        /* --- Effects --- */
+        
+        /* Light Sweep/Glare */
+        .light-sweep {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.8) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.8) 55%, transparent 70%);
+            transform: translateX(-150%) skewX(-20deg);
+            pointer-events: none;
+            mix-blend-mode: soft-light;
+            transition: transform 0.1s;
+            z-index: 20;
+        }
+
+        /* Subtle noise grain for realism */
+        .noise-layer {
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 3;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="gloss-coat"></div>
+                <div class="noise-layer"></div>
+                <div class="light-sweep" id="glare"></div>
+            </div>
+
+            <!-- Hardware -->
+            <div class="ceramic-frame"></div>
+            <div class="screw s-tl"></div><div class="screw s-tr"></div>
+            <div class="screw s-bl"></div><div class="screw s-br"></div>
+
+            <!-- Content -->
+            <div class="content-layer">
+                
+                <div class="header">
+                    <div class="brand-lockup">
+                        <span class="brand-text">Zen Pioneer</span>
+                        <span class="brand-sub">White Carbon Series</span>
+                    </div>
+                    <div class="edition-badge">LTD. 001</div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="tesseractCanvas"></canvas>
+                </div>
+
+                <div class="id-strip">
+                    <div class="avatar-ring">
+                        <div class="avatar-img">AC</div>
+                    </div>
+                    <div class="user-info">
+                        <h2>Alex Chen</h2>
+                        <p>Senior AI Architect</p>
+                    </div>
+                </div>
+
+                <div class="grid-header">Verified Modules</div>
+                <div class="tile-grid">
+                    <div class="prism-tile" title="Neural Core">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Ethics">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Quantum">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Security">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Uplink">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Vision">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Targeting">
+                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    </div>
+                    <div class="prism-tile" title="Defense">
+                         <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="stat-group">
+                        <span class="stat-val">52,400</span>
+                        <span class="stat-label">Compute Credits</span>
+                    </div>
+                    <div class="verified-check">
+                        <svg viewBox="0 0 24 24" style="width:14px; fill:white;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const glare = document.getElementById('glare');
+
+        // 1. Interactive Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -8;
+            const rotY = x * 8;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Halo/Glare effect
+            const glarePos = -100 + (x * 60);
+            glare.style.transform = `skewX(-20deg) translateX(${glarePos}%)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             glare.style.transform = `skewX(-20deg) translateX(-150%)`;
+        });
+
+        // 2. WebGL-style Canvas: The Tesseract
+        const canvas = document.getElementById('tesseractCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        let animTime = 0;
+
+        function drawTesseract() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            animTime += 0.01;
+            
+            const size = 50;
+            
+            // Draw a rotating multi-layered geometric structure
+            ctx.lineWidth = 1.5;
+            
+            for(let layer = 0; layer < 2; layer++) {
+                const layerOffset = layer * (Math.PI / 4);
+                const scale = 1 - (layer * 0.4);
+                const currentSize = size * scale;
+                
+                ctx.strokeStyle = layer === 0 ? '#0f172a' : '#06b6d4';
+                
+                ctx.beginPath();
+                for(let i=0; i<6; i++) {
+                    const angle = animTime + layerOffset + (i * (Math.PI * 2 / 6));
+                    // Isometric projection simulation
+                    const x = cx + Math.cos(angle) * currentSize;
+                    const y = cy + Math.sin(angle) * currentSize * 0.6; // Flatten y for 3D effect
+                    
+                    if(i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    
+                    // Connect to center if outer layer
+                    if(layer === 0) {
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath(); // New path for lines
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(cx, cy);
+                        ctx.stroke();
+                        ctx.restore();
+                        
+                        // Re-start path for main polygon
+                        if(i!==5) ctx.beginPath(); 
+                        if(i!==5) ctx.moveTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // Floating Nodes
+            for(let j=0; j<3; j++) {
+                const orbAngle = -animTime * 1.5 + (j * (Math.PI * 2 / 3));
+                const orbX = cx + Math.cos(orbAngle) * 70;
+                const orbY = cy + Math.sin(orbAngle) * 30;
+                
+                ctx.fillStyle = '#06b6d4';
+                ctx.beginPath();
+                ctx.arc(orbX, orbY, 3, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(drawTesseract);
+        }
+        drawTesseract();
+    })();
+    </script>
+</body>
+</html>
