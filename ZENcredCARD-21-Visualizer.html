@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Hyper-Fluid</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@300;500;700&family=Tech+Mono&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 680px;
+            
+            /* Hyper-Fluid Palette */
+            --void-dark: #080a10;
+            --fluid-primary: #4361ee;
+            --fluid-secondary: #f72585;
+            --fluid-accent: #4cc9f0;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --border-light: rgba(255, 255, 255, 0.15);
+            
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            /* Deep Void Background */
+            background-image: 
+                radial-gradient(circle at 20% 0%, #100b20 0%, #000 60%),
+                radial-gradient(circle at 80% 100%, #0b1020 0%, #000 60%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 h1 v1 h-1 z' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E");
+            font-family: 'Outfit', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Aerogel Glass) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            background: linear-gradient(160deg, rgba(20, 25, 40, 0.8), rgba(5, 5, 10, 0.95));
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            
+            /* Prismatic Border */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            
+            /* Ambient Glow Shadow */
+            box-shadow: 
+                0 40px 100px -20px rgba(67, 97, 238, 0.2),
+                inset 0 0 80px rgba(0, 0, 0, 0.8);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Internal Noise Texture */
+        .noise-grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        /* Aurora Sheen */
+        .aurora-sheen {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                rgba(67, 97, 238, 0.1) 20%,
+                rgba(247, 37, 133, 0.1) 40%,
+                rgba(76, 201, 240, 0.1) 60%,
+                transparent 80%
+            );
+            filter: blur(40px);
+            mix-blend-mode: screen;
+            pointer-events: none;
+            transition: transform 0.1s;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--text-main);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .brand-block h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .brand-block span {
+            font-size: 0.65rem;
+            color: var(--fluid-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .status-pill {
+            font-size: 0.6rem;
+            color: var(--fluid-secondary);
+            border: 1px solid rgba(247, 37, 133, 0.4);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: rgba(247, 37, 133, 0.05);
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.15);
+        }
+
+        /* --- Liquid Core (Canvas) --- */
+        .core-stage {
+            position: relative;
+            height: 180px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+        }
+        
+        /* Floating label */
+        .core-stage::after {
+            content: 'NEURAL FLUX';
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 700;
+        }
+
+        canvas#fluidCanvas {
+            width: 100%; height: 100%;
+            /* Magical Glow */
+            filter: drop-shadow(0 0 20px rgba(67, 97, 238, 0.4));
+        }
+
+        /* --- ID Section --- */
+        .id-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
+            border-radius: 16px;
+            border-left: 3px solid var(--fluid-primary);
+        }
+
+        .avatar-blob {
+            width: 60px; height: 60px;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: linear-gradient(135deg, var(--fluid-primary), var(--fluid-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: #fff;
+            animation: blob-float 6s ease-in-out infinite;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .user-details h2 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .user-details span {
+            font-size: 0.75rem;
+            color: var(--fluid-accent);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* --- Stats (Waveform) --- */
+        .wave-section {
+            margin-bottom: 25px;
+        }
+        .wave-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        
+        .wave-track {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .wave-bar {
+            flex: 1;
+            background: var(--fluid-primary);
+            border-radius: 2px;
+            opacity: 0.6;
+            animation: wave 1s ease-in-out infinite;
+        }
+        .wave-bar:nth-child(even) { background: var(--fluid-secondary); }
+
+        /* --- Crystal Badges --- */
+        .grid-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+        .crystal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .crystal-node {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crystal-node:hover {
+            border-color: var(--fluid-accent);
+            background: rgba(76, 201, 240, 0.1);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 20px -5px rgba(76, 201, 240, 0.3);
+        }
+
+        .node-icon { 
+            width: 22px; height: 22px; 
+            fill: rgba(255,255,255,0.7); 
+            margin-bottom: 4px; 
+            transition: fill 0.2s; 
+        }
+        .crystal-node:hover .node-icon { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+        
+        .node-lbl { font-size: 0.55rem; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        
+        .val { color: var(--fluid-accent); font-weight: 700; margin-left: 5px; }
+
+        /* --- Animations --- */
+        @keyframes blob-float {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: translateY(0); }
+            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: translateY(-3px) scale(1.05); }
+        }
+        
+        @keyframes wave {
+            0%, 100% { height: 20%; }
+            50% { height: 80%; }
+        }
+
+        /* Glare */
+        .soft-glare {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 35%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 55%, transparent 65%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            z-index: 20;
+            transition: transform 0.1s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="noise-grain"></div>
+                <div class="aurora-sheen" id="sheen"></div>
+                <div class="soft-glare" id="glare"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-block">
+                        <h1>ZEN.FLUID</h1>
+                        <span>Adaptive Intelligence</span>
+                    </div>
+                    <div class="status-pill">VER. 4.0</div>
+                </div>
+
+                <!-- Liquid Core -->
+                <div class="core-stage">
+                    <canvas id="fluidCanvas"></canvas>
+                </div>
+
+                <div class="id-card">
+                    <div class="avatar-blob">AC</div>
+                    <div class="user-details">
+                        <h2>Alex Chen</h2>
+                        <span>Lead Architect // Prime</span>
+                    </div>
+                </div>
+
+                <!-- Waveform Stats -->
+                <div class="wave-section">
+                    <div class="wave-header">
+                        <span>Neural Sync Rate</span>
+                        <span style="color:var(--fluid-accent)">99.9%</span>
+                    </div>
+                    <div class="wave-track">
+                        <!-- Generated Bars -->
+                        <div class="wave-bar" style="animation-delay:0s"></div>
+                        <div class="wave-bar" style="animation-delay:0.1s"></div>
+                        <div class="wave-bar" style="animation-delay:0.2s"></div>
+                        <div class="wave-bar" style="animation-delay:0.3s"></div>
+                        <div class="wave-bar" style="animation-delay:0.4s"></div>
+                        <div class="wave-bar" style="animation-delay:0.5s"></div>
+                        <div class="wave-bar" style="animation-delay:0.6s"></div>
+                        <div class="wave-bar" style="animation-delay:0.5s"></div>
+                        <div class="wave-bar" style="animation-delay:0.4s"></div>
+                        <div class="wave-bar" style="animation-delay:0.3s"></div>
+                        <div class="wave-bar" style="animation-delay:0.2s"></div>
+                        <div class="wave-bar" style="animation-delay:0.1s"></div>
+                        <div class="wave-bar" style="animation-delay:0s"></div>
+                    </div>
+                </div>
+
+                <div class="grid-label">
+                    <span>Augmentations</span>
+                    <div class="grid-line"></div>
+                </div>
+
+                <div class="crystal-grid">
+                    <div class="crystal-node" title="Deep Learning">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+                        <span class="node-lbl">Deep</span>
+                    </div>
+                    <div class="crystal-node" title="Quantum Comp">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span class="node-lbl">Logic</span>
+                    </div>
+                    <div class="crystal-node" title="Cyber Security">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span class="node-lbl">Sec</span>
+                    </div>
+                    <div class="crystal-node" title="Global Uplink">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="node-lbl">Link</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="crystal-node" title="Biometrics">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                        <span class="node-lbl">Bio</span>
+                    </div>
+                    <div class="crystal-node" title="Optics">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="node-lbl">Optic</span>
+                    </div>
+                    <div class="crystal-node" title="Pattern Rec">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="node-lbl">Rec</span>
+                    </div>
+                    <div class="crystal-node" title="Firewall">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="node-lbl">Fire</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>EXP: <span class="val">2,048 TB</span></div>
+                    <div>SIG: <span class="val">0x9F...A2</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const sheen = document.getElementById('sheen');
+        const glare = document.getElementById('glare');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Sheen/Glare Movement
+            const sheenPos = -100 + (x * 80);
+            sheen.style.transform = `translateX(${sheenPos}%) skewX(-20deg)`;
+            glare.style.transform = `translateX(${sheenPos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             sheen.style.transform = `translateX(-100%) skewX(-20deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+        });
+
+        // 2. Liquid Core (Canvas)
+        const canvas = document.getElementById('fluidCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        let time = 0;
+
+        function drawFluid() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            time += 0.01;
+            
+            // Create organic blob shape using sine waves
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const angle = (i / 100) * Math.PI * 2;
+                
+                // Noise simulation
+                const r = 50 
+                    + Math.sin(angle * 3 + time) * 10 
+                    + Math.sin(angle * 5 - time * 2) * 5;
+                
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            
+            // Liquid Gradient
+            const grad = ctx.createRadialGradient(cx - 20, cy - 20, 0, cx, cy, 70);
+            grad.addColorStop(0, '#4cc9f0');
+            grad.addColorStop(0.5, '#4361ee');
+            grad.addColorStop(1, '#f72585');
+            
+            ctx.fillStyle = grad;
+            ctx.fill();
+            
+            // Inner Shine (Gloss)
+            ctx.beginPath();
+            ctx.ellipse(cx - 20, cy - 20, 15, 8, Math.PI / 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fill();
+            
+            // Outer Glow
+            ctx.shadowBlur = 30;
+            ctx.shadowColor = '#4361ee';
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(drawFluid);
+        }
+        drawFluid();
+
+        window.addEventListener('resize', () => {
+            // Resize handler
+        });
+
+    })();
+    </script>
+</body>
+</html>
