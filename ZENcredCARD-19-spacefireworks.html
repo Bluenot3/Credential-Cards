@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Nebula-Drifter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&family=Rajdhani:wght@300;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+        :root {
+            --card-w: 400px;
+            --card-h: 660px;
+            
+            /* Nebula Palette */
+            --space-black: #050308;
+            --nebula-pink: #ff0055;
+            --nebula-cyan: #00f3ff;
+            --nebula-violet: #bc13fe;
+            --star-white: #ffffff;
+            
+            --glass-aerogel: rgba(20, 10, 30, 0.7);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--space-black);
+            /* Deep Space Background */
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(188, 19, 254, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='0.5' fill='white' fill-opacity='0.2'/%3E%3C/svg%3E");
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Aerogel Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            background: linear-gradient(135deg, rgba(10, 5, 20, 0.9), rgba(5, 2, 10, 0.95));
+            /* Warp Field Border */
+            box-shadow: 
+                0 0 0 2px rgba(255, 255, 255, 0.1),
+                0 0 30px rgba(188, 19, 254, 0.2),
+                inset 0 0 60px rgba(0, 243, 255, 0.1);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Starfield Canvas (Behind) */
+        canvas#starCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            mix-blend-mode: screen;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        /* Iridescent Coating */
+        .nebula-sheen {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(0, 243, 255, 0.1) 25%, 
+                rgba(255, 0, 85, 0.1) 50%, 
+                rgba(188, 19, 254, 0.1) 75%, 
+                transparent 100%
+            );
+            filter: blur(40px);
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+            /* Driven by JS tilt */
+            transition: transform 0.1s; 
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--star-white);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .brand-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-logo {
+            font-family: 'Bruno Ace SC', cursive;
+            font-size: 1.5rem;
+            line-height: 1;
+            background: linear-gradient(to right, #fff, var(--nebula-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+        
+        .brand-sub {
+            font-size: 0.6rem;
+            color: var(--nebula-pink);
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .sector-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.55rem;
+            color: var(--nebula-violet);
+            border: 1px solid var(--nebula-violet);
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(188, 19, 254, 0.1);
+        }
+
+        /* --- G-Force Meter (New) --- */
+        .g-force-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .g-label { font-size: 0.6rem; color: rgba(255,255,255,0.5); font-family: 'Space Mono'; }
+        .g-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .g-bar {
+            height: 100%;
+            width: 0%; /* JS Driven */
+            background: linear-gradient(90deg, var(--nebula-cyan), var(--nebula-pink));
+            box-shadow: 0 0 10px var(--nebula-pink);
+            transition: width 0.1s;
+        }
+        .g-val { font-size: 0.6rem; font-weight: 700; width: 30px; text-align: right; }
+
+        /* --- Warp Core Canvas (Center) --- */
+        .warp-window {
+            position: relative;
+            height: 140px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        .warp-overlay {
+            position: absolute;
+            inset: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        
+        /* Center reticle */
+        .warp-overlay::after {
+            content: '+';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(0, 243, 255, 0.5);
+            font-size: 1.5rem;
+            font-weight: 100;
+        }
+
+        canvas#warpCanvas {
+            width: 100%; height: 100%;
+            /* Glow */
+            filter: drop-shadow(0 0 5px #fff);
+        }
+
+        /* --- Identity --- */
+        .pilot-id {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, rgba(188, 19, 254, 0.1), transparent);
+            padding: 10px;
+            border-left: 3px solid var(--nebula-pink);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .avatar-sphere {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #444, #000);
+            border: 2px solid var(--nebula-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Reflection gloss */
+        .avatar-sphere::before {
+            content: ''; position: absolute; top: 5px; left: 10px; width: 15px; height: 8px;
+            background: rgba(255,255,255,0.4); border-radius: 50%; transform: rotate(-45deg);
+        }
+
+        .name-main {
+            font-family: 'Bruno Ace SC', cursive;
+            font-size: 1.4rem;
+            color: #fff;
+            line-height: 1;
+        }
+        
+        .role-sub {
+            font-size: 0.7rem;
+            color: var(--nebula-cyan);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* --- Sector Grid (Badges) --- */
+        .grid-header {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .sector-node {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sector-node:hover {
+            border-color: var(--nebula-pink);
+            background: rgba(255, 0, 85, 0.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+        }
+
+        .node-icon { width: 20px; height: 20px; fill: rgba(255,255,255,0.7); margin-bottom: 4px; transition: fill 0.2s; }
+        .sector-node:hover .node-icon { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+        
+        .node-lbl { font-size: 0.5rem; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--nebula-cyan);
+        }
+        
+        .thruster-status { color: var(--nebula-pink); font-weight: 700; }
+
+        /* --- Decorative --- */
+        .rivet {
+            position: absolute;
+            width: 6px; height: 6px;
+            background: #aaa;
+            border-radius: 50%;
+            box-shadow: inset 0 -1px 1px #000;
+            z-index: 20;
+        }
+        .r-tl { top: 15px; left: 15px; }
+        .r-tr { top: 15px; right: 15px; }
+        .r-bl { bottom: 15px; left: 15px; }
+        .r-br { bottom: 15px; right: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <canvas id="starCanvas"></canvas>
+                <div class="nebula-sheen" id="sheen"></div>
+            </div>
+            <div class="rivet r-tl"></div><div class="rivet r-tr"></div>
+            <div class="rivet r-bl"></div><div class="rivet r-br"></div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-block">
+                        <span class="brand-logo">ZEN//DRIFTER</span>
+                        <span class="brand-sub">Interstellar AI</span>
+                    </div>
+                    <div class="sector-tag">SECTOR: Z-9</div>
+                </div>
+
+                <!-- G-Force Meter -->
+                <div class="g-force-container">
+                    <span class="g-label">WARP VELOCITY</span>
+                    <div class="g-track">
+                        <div class="g-bar" id="gBar"></div>
+                    </div>
+                    <span class="g-val" id="gVal">0.0G</span>
+                </div>
+
+                <!-- Warp Core -->
+                <div class="warp-window">
+                    <div class="warp-overlay"></div>
+                    <canvas id="warpCanvas"></canvas>
+                </div>
+
+                <div class="pilot-id">
+                    <div class="avatar-sphere">👨‍🚀</div>
+                    <div class="user-data">
+                        <div class="name-main">Alex Chen</div>
+                        <div class="role-sub">Void Navigator // Cmdr.</div>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <span>Navigation Keys</span>
+                    <span style="color:var(--nebula-cyan)">ONLINE</span>
+                </div>
+
+                <div class="sector-grid">
+                    <div class="sector-node" title="Neural Navigation">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="node-lbl">Nav</span>
+                    </div>
+                    <div class="sector-node" title="Shield Integrity">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span class="node-lbl">Shield</span>
+                    </div>
+                    <div class="sector-node" title="Life Support">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                        <span class="node-lbl">Life</span>
+                    </div>
+                    <div class="sector-node" title="Comms">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+                        <span class="node-lbl">Comm</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="sector-node" title="Warp Drive">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="node-lbl">Warp</span>
+                    </div>
+                    <div class="sector-node" title="Scanners">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="node-lbl">Scan</span>
+                    </div>
+                    <div class="sector-node" title="Weapons">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="node-lbl">Fire</span>
+                    </div>
+                    <div class="sector-node" title="Cargo">
+                        <svg class="node-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="node-lbl">Load</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>FUEL: 98%</div>
+                    <div>THRUSTERS: <span class="thruster-status">ACTIVE</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const sheen = document.getElementById('sheen');
+        const gBar = document.getElementById('gBar');
+        const gVal = document.getElementById('gVal');
+
+        let lastX = 0;
+        let lastY = 0;
+        let velocity = 0;
+
+        // 1. Physics Engine (Tilt + Velocity)
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            // Calculate velocity for "Warp Speed"
+            const dist = Math.sqrt(Math.pow(e.clientX - lastX, 2) + Math.pow(e.clientY - lastY, 2));
+            velocity = Math.min(dist * 0.5, 50); // Cap velocity
+            
+            // Update G-Force Meter
+            const g = (velocity / 50) * 100;
+            gBar.style.width = `${g}%`;
+            gVal.innerText = `${(velocity / 5).toFixed(1)}G`;
+
+            lastX = e.clientX;
+            lastY = e.clientY;
+            
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Sheen Movement
+            const sheenPos = -100 + (x * 100);
+            sheen.style.transform = `translateX(${sheenPos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             sheen.style.transform = `translateX(-100%) skewX(-20deg)`;
+             velocity = 0;
+             gBar.style.width = '0%';
+             gVal.innerText = '0.0G';
+        });
+
+        // 2. Starfield Background (Canvas 1)
+        const starCanvas = document.getElementById('starCanvas');
+        const sCtx = starCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const sRect = starCanvas.getBoundingClientRect();
+        
+        starCanvas.width = sRect.width * dpr;
+        starCanvas.height = sRect.height * dpr;
+        sCtx.scale(dpr, dpr);
+        
+        const stars = [];
+        for(let i=0; i<100; i++) {
+            stars.push({
+                x: Math.random() * sRect.width,
+                y: Math.random() * sRect.height,
+                size: Math.random() * 1.5,
+                alpha: Math.random()
+            });
+        }
+
+        function drawStars() {
+            sCtx.clearRect(0, 0, sRect.width, sRect.height);
+            
+            stars.forEach(s => {
+                s.alpha = 0.3 + Math.random() * 0.7; // Twinkle
+                sCtx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+                sCtx.beginPath();
+                sCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                sCtx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        // 3. Warp Core (Middle Canvas)
+        const warpCanvas = document.getElementById('warpCanvas');
+        const wCtx = warpCanvas.getContext('2d');
+        const wRect = warpCanvas.getBoundingClientRect();
+        warpCanvas.width = wRect.width * dpr;
+        warpCanvas.height = wRect.height * dpr;
+        wCtx.scale(dpr, dpr);
+        
+        const cx = wRect.width / 2;
+        const cy = wRect.height / 2;
+        const streaks = [];
+        
+        // Init streaks
+        for(let i=0; i<50; i++) {
+            streaks.push({
+                angle: Math.random() * Math.PI * 2,
+                dist: Math.random() * 100,
+                speed: 0.5 + Math.random(),
+                len: 5
+            });
+        }
+
+        function drawWarp() {
+            // Trail effect
+            wCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            wCtx.fillRect(0, 0, wRect.width, wRect.height);
+            
+            // Base speed + mouse velocity boost
+            const boost = 1 + (velocity * 0.5);
+            
+            streaks.forEach(s => {
+                s.dist += s.speed * boost;
+                
+                // Reset if out of bounds
+                if(s.dist > Math.max(wRect.width, wRect.height)) {
+                    s.dist = 0;
+                    s.angle = Math.random() * Math.PI * 2;
+                }
+                
+                const x = cx + Math.cos(s.angle) * s.dist;
+                const y = cy + Math.sin(s.angle) * s.dist;
+                
+                // Calculate tail based on speed
+                const tailX = cx + Math.cos(s.angle) * (s.dist - (s.len * boost));
+                const tailY = cy + Math.sin(s.angle) * (s.dist - (s.len * boost));
+                
+                wCtx.strokeStyle = s.dist > 50 ? '#00f3ff' : '#ff0055';
+                wCtx.lineWidth = 1.5;
+                wCtx.beginPath();
+                wCtx.moveTo(x, y);
+                wCtx.lineTo(tailX, tailY);
+                wCtx.stroke();
+            });
+
+            requestAnimationFrame(drawWarp);
+        }
+        drawWarp();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            // Re-init canvas dims
+        });
+
+    })();
+    </script>
+</body>
+</html>
