@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Ronin Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Noto+Sans+JP:wght@100;400;700;900&family=Rajdhani:wght@500;700&display=swap');
+
+        :root {
+            --card-w: 380px;
+            --card-h: 620px;
+            
+            /* Ronin Palette */
+            --ink-black: #080808;
+            --samurai-red: #dc143c;
+            --imperial-gold: #d4af37;
+            --blade-silver: #e5e7eb;
+            --shogun-dark: #121212;
+            
+            --glass-lacquer: rgba(10, 5, 5, 0.9);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #050505;
+            /* Tatami/Tech Background */
+            background-image: 
+                radial-gradient(circle at 50% 50%, #2a0a0f 0%, #000 100%),
+                linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111),
+                linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 10px 10px;
+            font-family: 'Rajdhani', sans-serif;
+            perspective: 1600px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Chassis (Folded Steel) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            background: #111;
+            clip-path: polygon(
+                20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 
+                0 100%, 0 20px
+            );
+            /* Steel Texture */
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23222' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+            box-shadow: 
+                0 0 0 2px #333,
+                0 40px 80px -20px rgba(220, 20, 60, 0.2);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+            border-top: 2px solid var(--samurai-red);
+        }
+
+        /* Vertical Red Strike */
+        .chassis::before {
+            content: ''; position: absolute; top: 0; right: 40px; width: 4px; height: 100%;
+            background: var(--samurai-red);
+            box-shadow: 0 0 15px var(--samurai-red);
+            z-index: 1;
+        }
+
+        /* Sakura Canvas (Background) */
+        canvas#sakuraCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            opacity: 0.6;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        /* 2. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(30px);
+            z-index: 10;
+            color: var(--blade-silver);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .brand-seal {
+            width: 40px; height: 40px;
+            border: 2px solid var(--samurai-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            color: var(--samurai-red);
+            font-size: 1.2rem;
+            box-shadow: inset 0 0 10px rgba(220, 20, 60, 0.3);
+        }
+
+        .brand-text {
+            text-align: right;
+        }
+        
+        .brand-main {
+            font-family: 'Saira Stencil One', cursive;
+            font-size: 1.8rem;
+            color: #fff;
+            line-height: 0.9;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .brand-jp {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.8rem;
+            color: var(--samurai-red);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        /* --- Ensō Circle (Canvas) --- */
+        .enso-stage {
+            position: relative;
+            height: 160px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(220, 20, 60, 0.1) 0%, transparent 60%);
+        }
+        
+        canvas#ensoCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 8px var(--samurai-red));
+        }
+        
+        .kanji-overlay {
+            position: absolute;
+            font-family: 'Noto Sans JP', serif;
+            font-size: 4rem;
+            color: #fff;
+            opacity: 0.9;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        /* --- Identity --- */
+        .ronin-id {
+            display: grid;
+            grid-template-columns: 1fr 20px;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--imperial-gold);
+            padding-left: 15px;
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
+        }
+
+        .name-group h2 {
+            margin: 0;
+            font-family: 'Saira Stencil One', cursive;
+            font-size: 1.8rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        
+        .rank-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--imperial-gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .vert-jp {
+            writing-mode: vertical-rl;
+            font-family: 'Noto Sans JP';
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 3px;
+        }
+
+        /* --- Katana Edge (Meter) --- */
+        .katana-meter {
+            margin-bottom: 25px;
+        }
+        
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: var(--blade-silver);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .blade-edge {
+            height: 4px;
+            background: #333;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .blade-glow {
+            position: absolute;
+            top: 0; left: 0; height: 100%; width: 95%;
+            background: linear-gradient(90deg, #555, #fff, var(--samurai-red));
+            box-shadow: 0 0 15px var(--samurai-red);
+            animation: blade-shimmer 2s infinite linear;
+        }
+
+        /* --- Bushido Grid (Badges) --- */
+        .grid-label {
+            font-size: 0.65rem;
+            color: var(--samurai-red);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .divider-line { flex: 1; height: 1px; background: var(--samurai-red); opacity: 0.5; }
+
+        .bushido-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: auto;
+        }
+
+        .crest-badge {
+            aspect-ratio: 1;
+            background: #151515;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .crest-badge:hover {
+            border-color: var(--imperial-gold);
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .kanji-icon {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+        .crest-badge:hover .kanji-icon { color: var(--imperial-gold); text-shadow: 0 0 10px var(--imperial-gold); }
+        
+        .eng-label { font-size: 0.45rem; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+
+        /* Corner accents on badges */
+        .crest-badge::before {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px;
+            border-top: 1px solid var(--samurai-red); border-left: 1px solid var(--samurai-red);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .crest-badge:hover::before { opacity: 1; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .honor-stat { color: var(--imperial-gold); font-weight: 700; }
+
+        /* --- Animations --- */
+        @keyframes blade-shimmer { 
+            0% { background-position: -200px 0; } 
+            100% { background-position: 200px 0; } 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Hardware -->
+            <div class="chassis">
+                <canvas id="sakuraCanvas"></canvas>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-seal">禅</div>
+                    <div class="brand-text">
+                        <div class="brand-main">RONIN//AI</div>
+                        <div class="brand-jp">浪人プロトコル</div>
+                    </div>
+                </div>
+
+                <!-- Ensō Circle Canvas -->
+                <div class="enso-stage">
+                    <canvas id="ensoCanvas"></canvas>
+                    <div class="kanji-overlay">空</div> <!-- Ku (Void) -->
+                </div>
+
+                <div class="ronin-id">
+                    <div class="name-group">
+                        <h2>Alex Chen</h2>
+                        <div class="rank-group">
+                            <span>Masterless</span>
+                            <span style="color:var(--samurai-red)">// Lv. 100</span>
+                        </div>
+                    </div>
+                    <div class="vert-jp">アレックス</div>
+                </div>
+
+                <!-- Katana Meter -->
+                <div class="katana-meter">
+                    <div class="meter-label">
+                        <span>Blade Sharpness</span>
+                        <span style="color:var(--samurai-red)">LETHAL</span>
+                    </div>
+                    <div class="blade-edge">
+                        <div class="blade-glow"></div>
+                    </div>
+                </div>
+
+                <div class="grid-label">
+                    <span>Bushido Code</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <div class="bushido-grid">
+                    <div class="crest-badge" title="Rectitude">
+                        <span class="kanji-icon">義</span>
+                        <span class="eng-label">Logic</span>
+                    </div>
+                    <div class="crest-badge" title="Courage">
+                        <span class="kanji-icon">勇</span>
+                        <span class="eng-label">Risk</span>
+                    </div>
+                    <div class="crest-badge" title="Benevolence">
+                        <span class="kanji-icon">仁</span>
+                        <span class="eng-label">Ethics</span>
+                    </div>
+                    <div class="crest-badge" title="Respect">
+                        <span class="kanji-icon">礼</span>
+                        <span class="eng-label">Data</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="crest-badge" title="Honesty">
+                        <span class="kanji-icon">誠</span>
+                        <span class="eng-label">Veracity</span>
+                    </div>
+                    <div class="crest-badge" title="Honor">
+                        <span class="kanji-icon">名誉</span>
+                        <span class="eng-label">Rep</span>
+                    </div>
+                    <div class="crest-badge" title="Loyalty">
+                        <span class="kanji-icon">忠義</span>
+                        <span class="eng-label">Align</span>
+                    </div>
+                    <div class="crest-badge" title="Self-Control">
+                        <span class="kanji-icon">自制</span>
+                        <span class="eng-label">Control</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>CLAN: <span class="honor-stat">NONE</span></div>
+                    <div>HONOR: <span class="honor-stat">MAX</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 2. Sakura Glitch Petals (Canvas)
+        const sCanvas = document.getElementById('sakuraCanvas');
+        const sCtx = sCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const sRect = sCanvas.getBoundingClientRect();
+        
+        sCanvas.width = sRect.width * dpr;
+        sCanvas.height = sRect.height * dpr;
+        sCtx.scale(dpr, dpr);
+        
+        const petals = [];
+        for(let i=0; i<30; i++) {
+            petals.push({
+                x: Math.random() * sRect.width,
+                y: Math.random() * sRect.height,
+                size: Math.random() * 3 + 1,
+                speedY: Math.random() * 1 + 0.5,
+                speedX: (Math.random() - 0.5) * 1,
+                wobble: Math.random() * Math.PI * 2,
+                glitch: 0
+            });
+        }
+
+        function drawSakura() {
+            sCtx.clearRect(0, 0, sRect.width, sRect.height);
+            
+            petals.forEach(p => {
+                p.y += p.speedY;
+                p.x += Math.sin(p.wobble) * 0.5 + p.speedX;
+                p.wobble += 0.05;
+                
+                // Random glitch jump
+                if(Math.random() > 0.99) {
+                    p.x += (Math.random() - 0.5) * 10;
+                    p.glitch = 5;
+                }
+
+                if(p.y > sRect.height) {
+                    p.y = -10;
+                    p.x = Math.random() * sRect.width;
+                }
+                
+                sCtx.fillStyle = p.glitch > 0 ? '#fff' : '#dc143c'; // White flash on glitch
+                if(p.glitch > 0) p.glitch--;
+                
+                // Draw Petal Shape
+                sCtx.beginPath();
+                sCtx.ellipse(p.x, p.y, p.size, p.size*0.6, p.wobble, 0, Math.PI*2);
+                sCtx.fill();
+            });
+            requestAnimationFrame(drawSakura);
+        }
+        drawSakura();
+
+        // 3. Digital Ensō (Middle Canvas)
+        const eCanvas = document.getElementById('ensoCanvas');
+        const eCtx = eCanvas.getContext('2d');
+        const eRect = eCanvas.getBoundingClientRect();
+        eCanvas.width = eRect.width * dpr;
+        eCanvas.height = eRect.height * dpr;
+        eCtx.scale(dpr, dpr);
+        
+        const cx = eRect.width / 2;
+        const cy = eRect.height / 2;
+        let angle = 0;
+        
+        // Brush stroke texture simulation
+        const points = [];
+        for(let i=0; i<50; i++) {
+            points.push({
+                a: (i / 50) * Math.PI * 1.8, // Incomplete circle
+                r: 50 + (Math.random() - 0.5) * 5,
+                w: Math.random() * 3 + 1
+            });
+        }
+
+        function drawEnso() {
+            eCtx.clearRect(0, 0, eRect.width, eRect.height);
+            angle += 0.02;
+            
+            eCtx.save();
+            eCtx.translate(cx, cy);
+            eCtx.rotate(angle * 0.1); // Slow overall rotation
+            
+            // Draw Brush Stroke
+            points.forEach((p, i) => {
+                const x = Math.cos(p.a) * p.r;
+                const y = Math.sin(p.a) * p.r;
+                
+                // Jitter effect
+                const jx = (Math.random() - 0.5) * 1;
+                const jy = (Math.random() - 0.5) * 1;
+                
+                eCtx.beginPath();
+                eCtx.arc(x + jx, y + jy, p.w, 0, Math.PI*2);
+                eCtx.fillStyle = `rgba(220, 20, 60, ${0.5 + Math.random()*0.5})`;
+                eCtx.fill();
+            });
+            
+            // Tech Ring (Outer)
+            eCtx.rotate(-angle * 0.2);
+            eCtx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+            eCtx.lineWidth = 1;
+            eCtx.beginPath();
+            eCtx.arc(0, 0, 65, 0, Math.PI * 1.5);
+            eCtx.stroke();
+            
+            eCtx.restore();
+            requestAnimationFrame(drawEnso);
+        }
+        drawEnso();
+
+        window.addEventListener('resize', () => {
+            // Resize placeholder
+        });
+
+    })();
+    </script>
+</body>
+</html>
