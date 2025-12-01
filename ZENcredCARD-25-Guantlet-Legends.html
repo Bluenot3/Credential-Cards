@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Sovereign-Aether</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Marcellus&family=Syncopate:wght@400;700&display=swap');
+
+        :root {
+            --card-w: 420px;
+            --card-h: 720px;
+            
+            /* Sovereign Palette */
+            --void-black: #020103;
+            --sovereign-gold: #d4af37;
+            --aether-purple: #7b2cbf;
+            --warp-cyan: #00f0ff;
+            --divine-white: #f8f8ff;
+            
+            --gold-grad: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --glass-shard: rgba(15, 10, 25, 0.8);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void-black);
+            /* Celestial Vault Background */
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a002e 0%, #000 70%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L30 5 M30 55 L30 60 M0 30 L5 30 M55 30 L60 30' stroke='rgba(212, 175, 55, 0.05)' stroke-width='1'/%3E%3C/svg%3E");
+            font-family: 'Marcellus', serif;
+            perspective: 2500px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. The Sovereign Chassis --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 4px;
+            /* Artifact Shape */
+            clip-path: polygon(
+                20px 0, 100% 0, 100% calc(100% - 40px), 
+                calc(100% - 40px) 100%, 0 100%, 0 20px
+            );
+            background: linear-gradient(170deg, #0f0518, #000);
+            
+            /* Divine Shadow */
+            box-shadow: 
+                0 0 0 1px rgba(212, 175, 55, 0.1),
+                0 50px 120px -20px rgba(123, 44, 191, 0.3),
+                inset 0 0 100px #000;
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Liquid Gold Inlay (Animated) */
+        .gold-inlay {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='40' stroke='%23ffd700' stroke-opacity='0.03' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+            opacity: 0.6;
+            mix-blend-mode: overlay;
+            z-index: 1;
+            animation: pulse-gold 8s infinite alternate;
+        }
+
+        /* Chronal Drift Canvas */
+        canvas#driftCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            mix-blend-mode: screen;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Aether Sheen */
+        .aether-sheen {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg, 
+                transparent 0%, 
+                rgba(212, 175, 55, 0.1) 20%, 
+                rgba(123, 44, 191, 0.1) 40%, 
+                rgba(0, 240, 255, 0.1) 60%, 
+                transparent 80%
+            );
+            filter: blur(50px);
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+            transition: transform 0.1s;
+        }
+
+        /* 2. Floating Frame */
+        .frame-gold {
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            /* Matching Clip */
+            clip-path: polygon(
+                18px 0, 100% 0, 100% calc(100% - 38px), 
+                calc(100% - 38px) 100%, 0 100%, 0 18px
+            );
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.05);
+        }
+
+        /* 3. Content Layer */
+        .content {
+            position: absolute;
+            inset: 0;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            z-index: 10;
+            color: var(--divine-white);
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--sovereign-gold), transparent);
+        }
+
+        .brand-seal {
+            width: 45px; height: 45px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--sovereign-gold);
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        .seal-inner {
+            transform: rotate(-45deg);
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 900;
+            color: var(--sovereign-gold);
+            font-size: 1.4rem;
+        }
+
+        .brand-text {
+            text-align: right;
+        }
+        .brand-main {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.5rem;
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: 1px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+        }
+        .brand-sub {
+            font-size: 0.65rem;
+            color: var(--aether-purple);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        /* --- Singularity Core (Canvas) --- */
+        .singularity-stage {
+            position: relative;
+            height: 200px;
+            margin-bottom: 35px;
+            background: radial-gradient(circle, rgba(20, 0, 40, 0.5) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+        
+        canvas#singularityCanvas {
+            width: 100%; height: 100%;
+            /* Divine Glow */
+            filter: drop-shadow(0 0 15px var(--aether-purple)) drop-shadow(0 0 20px var(--sovereign-gold));
+        }
+
+        /* --- Identity Cartouche --- */
+        .id-cartouche {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+            backdrop-filter: blur(8px);
+        }
+
+        .avatar-void {
+            width: 70px; height: 70px;
+            background: #050508;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px solid var(--aether-purple);
+        }
+        
+        /* Floating Avatar Geometry */
+        .avatar-geo {
+            width: 40px; height: 40px;
+            border: 1px solid #fff;
+            transform: rotate(45deg);
+            animation: breathe-geo 6s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-geo::after {
+            content: ''; width: 20px; height: 20px; border: 1px solid var(--sovereign-gold);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .name-ancient {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.7rem;
+            color: #fff;
+            line-height: 1;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        
+        .role-tech {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7rem;
+            color: var(--sovereign-gold);
+            margin-top: 6px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .role-dot { width: 6px; height: 6px; background: var(--warp-cyan); border-radius: 50%; box-shadow: 0 0 8px var(--warp-cyan); }
+
+        /* --- Rune Grid (Badges) --- */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .rune-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: auto;
+        }
+
+        .rune-shard {
+            aspect-ratio: 1;
+            background: rgba(20, 10, 30, 0.4);
+            border: 1px solid rgba(123, 44, 191, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        /* Hover Effect */
+        .rune-shard:hover {
+            border-color: var(--sovereign-gold);
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -5px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Magic Corner Accents */
+        .rune-shard::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0;
+            border-top: 2px solid var(--warp-cyan); border-right: 2px solid transparent;
+            transition: width 0.3s, height 0.3s;
+        }
+        .rune-shard:hover::before { width: 12px; height: 12px; }
+
+        .rune-icon { width: 24px; height: 24px; fill: rgba(255,255,255,0.6); margin-bottom: 5px; transition: fill 0.3s; }
+        .rune-shard:hover .rune-icon { fill: #fff; filter: drop-shadow(0 0 8px #fff); }
+        
+        .rune-lbl { font-size: 0.55rem; color: rgba(255,255,255,0.4); text-transform: uppercase; font-family: 'Syncopate'; font-weight: 700; }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Syncopate';
+            font-size: 0.6rem;
+            color: var(--sovereign-gold);
+            background: rgba(0,0,0,0.5);
+            padding: 10px 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+        }
+        
+        .val { color: #fff; font-weight: 700; margin-left: 5px; }
+
+        /* --- Animations --- */
+        @keyframes breathe-geo { 
+            0%, 100% { transform: rotate(45deg) scale(1); border-color: #fff; } 
+            50% { transform: rotate(45deg) scale(0.85); border-color: var(--aether-purple); } 
+        }
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 0.6; } 50% { opacity: 0.8; filter: brightness(1.2); }
+        }
+
+        /* Glare */
+        .artifact-glare {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 40%, rgba(212, 175, 55, 0.1) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(212, 175, 55, 0.1) 55%, transparent 60%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            z-index: 20;
+            transition: transform 0.1s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis -->
+            <div class="chassis">
+                <div class="gold-inlay"></div>
+                <canvas id="driftCanvas"></canvas>
+                <div class="aether-sheen" id="sheen"></div>
+                <div class="artifact-glare" id="glare"></div>
+            </div>
+            
+            <!-- Frame -->
+            <div class="frame-gold"></div>
+
+            <!-- Content -->
+            <div class="content">
+                
+                <div class="header">
+                    <div class="brand-seal">
+                        <span class="seal-inner">Ω</span>
+                    </div>
+                    <div class="brand-text">
+                        <div class="brand-main">SOVEREIGN</div>
+                        <div class="brand-sub">Aether-Class AI</div>
+                    </div>
+                </div>
+
+                <!-- Singularity Core -->
+                <div class="singularity-stage">
+                    <canvas id="singularityCanvas"></canvas>
+                </div>
+
+                <div class="id-cartouche">
+                    <div class="avatar-void">
+                        <div class="avatar-geo"></div>
+                    </div>
+                    <div class="user-details">
+                        <div class="name-ancient">Alex Chen</div>
+                        <div class="role-tech">
+                            <div class="role-dot"></div>
+                            <span>Void Walker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <span>Divine Runes</span>
+                    <span style="color:var(--warp-cyan)">ACTIVE</span>
+                </div>
+
+                <div class="rune-container">
+                    <div class="rune-shard" title="Wisdom">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>
+                        <span class="rune-lbl">Mind</span>
+                    </div>
+                    <div class="rune-shard" title="Power">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span class="rune-lbl">Force</span>
+                    </div>
+                    <div class="rune-shard" title="Sight">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="rune-lbl">Eye</span>
+                    </div>
+                    <div class="rune-shard" title="Protection">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="rune-lbl">Ward</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="rune-shard" title="Connection">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="rune-lbl">Link</span>
+                    </div>
+                    <div class="rune-shard" title="Logic">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3-3z"/></svg>
+                        <span class="rune-lbl">Core</span>
+                    </div>
+                    <div class="rune-shard" title="Targeting">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="rune-lbl">Aim</span>
+                    </div>
+                    <div class="rune-shard" title="Shielding">
+                        <svg class="rune-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="rune-lbl">Wall</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>AETHER: <span class="val">MAX</span></div>
+                    <div>ID: <span class="val">0x9F...A4</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const sheen = document.getElementById('sheen');
+        const glare = document.getElementById('glare');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -12;
+            const rotY = x * 12;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Sheen Movement
+            const sheenPos = -50 + (x * 40);
+            const sheenRot = (x * y) * 25;
+            sheen.style.transform = `translate(${sheenPos}%, -50%) rotate(${sheenRot}deg)`;
+            
+            // Glare
+            const glarePos = -100 + (x * 100);
+            glare.style.transform = `translateX(${glarePos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             sheen.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+        });
+
+        // 2. Chronal Drift Particles (Background Canvas)
+        const dCanvas = document.getElementById('driftCanvas');
+        const dCtx = dCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const dRect = dCanvas.getBoundingClientRect();
+        
+        dCanvas.width = dRect.width * dpr;
+        dCanvas.height = dRect.height * dpr;
+        dCtx.scale(dpr, dpr);
+        
+        const particles = [];
+        for(let i=0; i<60; i++) {
+            particles.push({
+                x: Math.random() * dRect.width,
+                y: Math.random() * dRect.height,
+                size: Math.random() * 2,
+                speed: 0.2 + Math.random() * 0.5,
+                alpha: Math.random() * 0.6,
+                color: Math.random() > 0.5 ? '#d4af37' : '#7b2cbf'
+            });
+        }
+
+        function drawDrift() {
+            dCtx.clearRect(0, 0, dRect.width, dRect.height);
+            
+            particles.forEach(p => {
+                p.y -= p.speed;
+                if(p.y < -10) {
+                    p.y = dRect.height + 10;
+                    p.x = Math.random() * dRect.width;
+                }
+                
+                dCtx.globalAlpha = p.alpha;
+                dCtx.fillStyle = p.color;
+                dCtx.beginPath();
+                dCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                dCtx.fill();
+                
+                // Trail
+                dCtx.beginPath();
+                dCtx.moveTo(p.x, p.y);
+                dCtx.lineTo(p.x, p.y + p.speed * 20);
+                dCtx.strokeStyle = p.color;
+                dCtx.lineWidth = p.size / 2;
+                dCtx.stroke();
+            });
+            requestAnimationFrame(drawDrift);
+        }
+        drawDrift();
+
+        // 3. Singularity Core (Middle Canvas)
+        const sCanvas = document.getElementById('singularityCanvas');
+        const sCtx = sCanvas.getContext('2d');
+        const sRect = sCanvas.getBoundingClientRect();
+        sCanvas.width = sRect.width * dpr;
+        sCanvas.height = sRect.height * dpr;
+        sCtx.scale(dpr, dpr);
+        
+        const cx = sRect.width / 2;
+        const cy = sRect.height / 2;
+        let time = 0;
+
+        function drawSingularity() {
+            sCtx.clearRect(0, 0, sRect.width, sRect.height);
+            time += 0.02;
+            
+            // Accretion Disk
+            sCtx.save();
+            sCtx.translate(cx, cy);
+            sCtx.rotate(time * 0.5);
+            
+            // Create multiple rings
+            for(let i=0; i<3; i++) {
+                sCtx.beginPath();
+                const r = 40 + i * 15;
+                sCtx.ellipse(0, 0, r, r * 0.4, time * (i%2===0 ? 1 : -1), 0, Math.PI * 2);
+                sCtx.strokeStyle = i===1 ? 'rgba(0, 240, 255, 0.5)' : 'rgba(212, 175, 55, 0.5)';
+                sCtx.lineWidth = 1.5;
+                sCtx.stroke();
+            }
+            sCtx.restore();
+
+            // Central Black Hole
+            const grad = sCtx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+            grad.addColorStop(0, '#000');
+            grad.addColorStop(0.7, '#1a002e');
+            grad.addColorStop(1, 'transparent');
+            
+            sCtx.fillStyle = grad;
+            sCtx.beginPath();
+            sCtx.arc(cx, cy, 30, 0, Math.PI*2);
+            sCtx.fill();
+            
+            // Event Horizon Ring
+            sCtx.strokeStyle = '#7b2cbf';
+            sCtx.lineWidth = 2;
+            sCtx.beginPath();
+            sCtx.arc(cx, cy, 31, 0, Math.PI*2);
+            sCtx.stroke();
+
+            requestAnimationFrame(drawSingularity);
+        }
+        drawSingularity();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            // Placeholder
+        });
+
+    })();
+    </script>
+</body>
+</html>
