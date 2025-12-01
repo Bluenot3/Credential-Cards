@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen AI Pioneer - Omni-Architect</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Jura:wght@300;500;700&family=Syncopate:wght@400;700&display=swap');
+
+        :root {
+            --card-w: 420px;
+            --card-h: 700px;
+            
+            /* Luminary Palette */
+            --void-dark: #030005;
+            --lumi-cyan: #00f0ff;
+            --lumi-magenta: #ff0055;
+            --lumi-gold: #ffd700;
+            --lumi-white: #ffffff;
+            
+            /* Photonic Gradients */
+            --glass-surface: rgba(10, 10, 20, 0.6);
+            --border-light: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--void-dark);
+            /* Deep Starfield & Nebula */
+            background-image: 
+                radial-gradient(circle at 20% 0%, #1a0020 0%, transparent 50%),
+                radial-gradient(circle at 80% 100%, #001020 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='0.5' fill='white' fill-opacity='0.2'/%3E%3C/svg%3E");
+            font-family: 'Jura', sans-serif;
+            perspective: 2500px;
+            overflow: hidden;
+        }
+
+        /* --- 3D Scene --- */
+        .scene {
+            width: var(--card-w);
+            height: var(--card-h);
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s cubic-bezier(0.1, 0.5, 0.5, 1);
+        }
+
+        /* --- 1. Photonic Chassis (Base) --- */
+        .chassis {
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            background: var(--glass-surface);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            
+            /* Optical Border */
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.05) inset,
+                0 40px 80px -20px rgba(0,0,0,0.8);
+            
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Iridescence Layer (Thin-Film Interference) */
+        .thin-film {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                rgba(0, 240, 255, 0.15) 20%,
+                rgba(255, 215, 0, 0.15) 40%,
+                rgba(255, 0, 85, 0.15) 60%,
+                transparent 80%
+            );
+            filter: blur(50px);
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+            transition: transform 0.1s;
+            z-index: 1;
+        }
+
+        /* Noise Texture */
+        .noise {
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 2. Glass-on-Glass Layers (Parallax) */
+        .glass-layer {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 30px -10px rgba(0,0,0,0.5),
+                inset 0 0 20px rgba(255,255,255,0.02);
+            transform-style: preserve-3d;
+        }
+
+        /* Top Header Glass */
+        .glass-header {
+            top: 25px; left: 25px; right: 25px; height: 80px;
+            transform: translateZ(30px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 20;
+        }
+
+        /* Core Glass */
+        .glass-core {
+            top: 125px; left: 25px; right: 25px; height: 200px;
+            transform: translateZ(20px);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+            z-index: 15;
+        }
+
+        /* Badge Glass */
+        .glass-grid {
+            top: 345px; left: 25px; right: 25px; bottom: 85px;
+            transform: translateZ(40px);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            z-index: 25;
+        }
+
+        /* Footer Glass */
+        .glass-footer {
+            bottom: 25px; left: 25px; right: 25px; height: 45px;
+            transform: translateZ(30px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 20;
+        }
+
+        /* --- Typography --- */
+        .brand-text h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin: 0;
+            line-height: 1;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+        .brand-text span {
+            font-size: 0.6rem;
+            color: var(--lumi-cyan);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .hologram-pill {
+            font-family: 'Jura', sans-serif;
+            font-size: 0.6rem;
+            color: var(--lumi-magenta);
+            border: 1px solid var(--lumi-magenta);
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 0, 85, 0.05);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+            animation: pulse-slow 3s infinite;
+            font-weight: 700;
+        }
+
+        /* --- Galaxy Core --- */
+        canvas#galaxyCanvas {
+            width: 100%; height: 100%;
+            /* Bloom effect */
+            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5));
+        }
+        
+        .core-reticle {
+            position: absolute;
+            inset: 20px;
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: spin-slow 20s linear infinite;
+        }
+        .core-reticle::before {
+            content: ''; position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff;
+        }
+
+        /* --- Identity --- */
+        .id-strip {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 12px;
+        }
+
+        .avatar-lumi {
+            width: 55px; height: 55px;
+            border-radius: 50%;
+            /* Rotating spectral border */
+            background: conic-gradient(from 0deg, var(--lumi-cyan), var(--lumi-magenta), var(--lumi-gold), var(--lumi-cyan));
+            padding: 2px;
+            position: relative;
+            animation: spin-slow 10s linear infinite;
+        }
+        .avatar-img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: #050508;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #fff;
+            position: relative;
+            z-index: 2; /* Keep text upright */
+            animation: spin-slow-rev 10s linear infinite; /* Counter-rotate */
+        }
+
+        .user-name {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.2rem;
+            color: #fff;
+            margin: 0;
+            line-height: 1;
+            font-weight: 700;
+        }
+        .user-role {
+            font-size: 0.65rem;
+            color: var(--lumi-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* --- Gem Grid (Badges) --- */
+        .badge-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            height: 100%;
+            align-content: start;
+        }
+
+        .gem-node {
+            aspect-ratio: 1;
+            position: relative;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .gem-node:hover {
+            border-color: var(--lumi-white);
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.05) translateZ(10px);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+            z-index: 10;
+        }
+
+        /* Refractive shine on badges */
+        .gem-node::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+            transform: translateX(-150%);
+            transition: transform 0.4s;
+            z-index: 1;
+        }
+        .gem-node:hover::before { transform: translateX(150%); }
+
+        .gem-icon { 
+            width: 22px; height: 22px; 
+            fill: rgba(255,255,255,0.7); 
+            margin-bottom: 5px; 
+            transition: fill 0.3s; 
+            position: relative; 
+            z-index: 2;
+        }
+        .gem-node:hover .gem-icon { fill: #fff; filter: drop-shadow(0 0 8px var(--lumi-cyan)); }
+        
+        .gem-lbl { 
+            font-size: 0.55rem; 
+            color: rgba(255,255,255,0.5); 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            position: relative; 
+            z-index: 2;
+        }
+
+        /* --- Footer --- */
+        .stat-pair { font-size: 0.7rem; color: rgba(255,255,255,0.6); font-weight: 500; }
+        .stat-pair span { color: var(--lumi-magenta); font-weight: 700; margin-left: 5px; text-shadow: 0 0 5px rgba(255, 0, 85, 0.4); }
+
+        /* --- Effects --- */
+        @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        /* Variant for items that are centered themselves */
+        @keyframes spin-slow-rev { 100% { transform: rotate(-360deg); } }
+        
+        @keyframes pulse-slow { 
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); } 
+            50% { opacity: 0.7; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); } 
+        }
+
+        /* Specular Highlight */
+        .specular {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.1) 55%, transparent 65%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            z-index: 50;
+            transition: transform 0.1s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="card" id="card">
+            
+            <!-- Chassis Layers -->
+            <div class="chassis">
+                <div class="thin-film" id="sheen"></div>
+                <div class="noise"></div>
+                <div class="specular" id="glare"></div>
+            </div>
+
+            <!-- Glass Layer 1: Header -->
+            <div class="glass-layer glass-header">
+                <div class="brand-text">
+                    <h1>ZEN.OMNI</h1>
+                    <span>Architect Series</span>
+                </div>
+                <div class="hologram-pill">STATUS: FLUX</div>
+            </div>
+
+            <!-- Glass Layer 2: Core -->
+            <div class="glass-layer glass-core">
+                <div class="core-reticle"></div>
+                <canvas id="galaxyCanvas"></canvas>
+            </div>
+
+            <!-- Glass Layer 3: Grid -->
+            <div class="glass-layer glass-grid">
+                <div class="id-strip">
+                    <div class="avatar-lumi">
+                        <div class="avatar-img">AC</div>
+                    </div>
+                    <div>
+                        <h2 class="user-name">Alex Chen</h2>
+                        <div class="user-role">Stellar Architect</div>
+                    </div>
+                </div>
+
+                <div class="badge-container">
+                    <div class="gem-node" title="Neural Networks">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+                        <span class="gem-lbl">Neural</span>
+                    </div>
+                    <div class="gem-node" title="Quantum Logic">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span class="gem-lbl">Logic</span>
+                    </div>
+                    <div class="gem-node" title="Deep Learning">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 15l-5-5 5-5 5 5-5 5z"/></svg>
+                        <span class="gem-lbl">Deep</span>
+                    </div>
+                    <div class="gem-node" title="Security">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/></svg>
+                        <span class="gem-lbl">Safe</span>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="gem-node" title="Data Uplink">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 2.28L19.25 7 12 9.72 4.75 7 12 4.28zM2 17l10 5 10-5V8.8L12 13.5 2 8.8V17zm2.58-5.9l7.42 3.49 7.42-3.49v6.82L12 21.39l-7.42-3.49v-6.82z"/></svg>
+                        <span class="gem-lbl">Link</span>
+                    </div>
+                    <div class="gem-node" title="Vision">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <span class="gem-lbl">Vis</span>
+                    </div>
+                    <div class="gem-node" title="Targeting">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="gem-lbl">Aim</span>
+                    </div>
+                    <div class="gem-node" title="Defense">
+                        <svg class="gem-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                        <span class="gem-lbl">Def</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glass Layer 4: Footer -->
+            <div class="glass-layer glass-footer">
+                <div class="stat-pair">SYNC: <span>99.9%</span></div>
+                <div class="stat-pair">CRED: <span>MAX</span></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const card = document.getElementById('card');
+        const sheen = document.getElementById('sheen');
+        const glare = document.getElementById('glare');
+
+        // 1. Tilt Physics
+        document.addEventListener('mousemove', (e) => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            const x = (e.clientX - w/2) / (w/2);
+            const y = (e.clientY - h/2) / (h/2);
+            
+            const rotX = y * -10;
+            const rotY = x * 10;
+            
+            card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            
+            // Sheen/Glare Movement
+            const sheenPos = -50 + (x * 30);
+            const sheenRot = (x * y) * 45;
+            sheen.style.transform = `translate(${sheenPos}%, -50%) rotate(${sheenRot}deg)`;
+            
+            const glarePos = -100 + (x * 80);
+            glare.style.transform = `translateX(${glarePos}%) skewX(-20deg)`;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             sheen.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+             glare.style.transform = `translateX(-100%) skewX(-20deg)`;
+        });
+
+        // 2. Galaxy Particle Core (Canvas)
+        const canvas = document.getElementById('galaxyCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        
+        const particles = [];
+        const count = 120;
+        let time = 0;
+
+        // Init Particles
+        for(let i=0; i<count; i++) {
+            particles.push({
+                angle: (i / count) * Math.PI * 2,
+                radius: 15 + Math.random() * 70,
+                speed: 0.005 + Math.random() * 0.015,
+                size: 0.5 + Math.random() * 2,
+                color: Math.random() > 0.5 ? '#00f3ff' : '#ff0055',
+                offsetY: (Math.random() - 0.5) * 40
+            });
+        }
+
+        function drawGalaxy() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            time += 0.01;
+            
+            // Central Star
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 25);
+            grad.addColorStop(0, '#fff');
+            grad.addColorStop(0.4, 'rgba(0, 240, 255, 0.5)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 25, 0, Math.PI*2);
+            ctx.fill();
+
+            // Spiral Arms
+            particles.forEach(p => {
+                p.angle += p.speed;
+                
+                // Spiral math
+                const x = cx + Math.cos(p.angle + time) * p.radius;
+                const y = cy + Math.sin(p.angle + time) * (p.radius * 0.6) + p.offsetY; // Flatten orbit
+                
+                // Depth calculation
+                const z = Math.sin(p.angle); 
+                const alpha = (z + 2) / 3; 
+                
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(x, y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Neural Connections
+                const neighbor = particles[(particles.indexOf(p) + 5) % count];
+                const nx = cx + Math.cos(neighbor.angle + time) * neighbor.radius;
+                const ny = cy + Math.sin(neighbor.angle + time) * (neighbor.radius * 0.6) + neighbor.offsetY;
+                
+                const dist = Math.sqrt(Math.pow(x - nx, 2) + Math.pow(y - ny, 2));
+                
+                if (dist < 45) {
+                    ctx.strokeStyle = p.color;
+                    ctx.lineWidth = 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(nx, ny);
+                    ctx.stroke();
+                }
+            });
+            
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(drawGalaxy);
+        }
+        drawGalaxy();
+
+        window.addEventListener('resize', () => {
+            // Resize placeholder
+        });
+
+    })();
+    </script>
+</body>
+</html>
